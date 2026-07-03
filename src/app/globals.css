@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+:root {
+  --night: #050a14;
+  --night-mid: #0a1020;
+  --night-card: #0d1528;
+  --night-light: #121c32;
+  --white: #ffffff;
+  --silver: #d1d5db;
+  --silver-muted: #b8bcc6;
+  --ice: #ffffff;
+  --background: var(--night);
+  --foreground: var(--white);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-night: var(--night);
+  --color-night-mid: var(--night-mid);
+  --color-night-card: var(--night-card);
+  --color-night-light: var(--night-light);
+  --color-white: var(--white);
+  --color-silver: var(--silver);
+  --color-silver-muted: var(--silver-muted);
+  --color-ice: var(--ice);
+  --font-serif: var(--font-display);
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--night);
+  color: var(--white);
+  font-family: var(--font-sans), "Montserrat", system-ui, sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.font-sans-ui {
+  font-family: var(--font-sans), "Montserrat", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.bg-night-gradient {
+  background-color: var(--night);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+.ref-card {
+  background: var(--night-card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+}
+
+.ref-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  padding: 0.5rem 0 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ref-input:focus {
+  border-bottom-color: rgba(255, 255, 255, 0.85);
+}
+
+.ref-input::placeholder {
+  color: rgba(184, 188, 198, 0.65);
+}
+
+.ref-input:disabled {
+  opacity: 0.45;
+}
+
+select.ref-input {
+  color: var(--white);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  padding-right: 1.25rem;
+}
+
+.ref-divider-v {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.hero-readable {
+  text-shadow: 0 1px 12px rgba(5, 10, 20, 0.85), 0 0 24px rgba(5, 10, 20, 0.5);
+}
+
+.hero-bg-image {
+  filter: brightness(0.68) contrast(1.08) saturate(0.75);
+  image-rendering: auto;
+}
+
+/* Escurece o lençol branco no centro */
+.hero-bg-fabric-dim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 90% 70% at 50% 55%,
+      rgba(5, 10, 20, 0.55) 0%,
+      rgba(5, 10, 20, 0.35) 40%,
+      transparent 70%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(5, 10, 20, 0.25) 0%,
+      rgba(5, 10, 20, 0.45) 35%,
+      rgba(5, 10, 20, 0.3) 65%,
+      rgba(5, 10, 20, 0.15) 100%
+    );
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 10, 20, 0.35) 0%,
+    rgba(5, 10, 20, 0.15) 30%,
+    rgba(5, 10, 20, 0.2) 55%,
+    rgba(5, 10, 20, 0.65) 100%
+  );
+}
+
+.hero-bg-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 45%,
+    transparent 20%,
+    rgba(5, 10, 20, 0.4) 100%
+  );
+}
+
+.hero-bg-bottom-blend {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 22%;
+  background: linear-gradient(to top, #050a14 0%, transparent 100%);
+}
+
+@keyframes scrollPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleY(0.6);
+    transform-origin: top;
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+
+.scroll-line {
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+input,
+select,
+textarea {
+  font-family: var(--font-sans), "Montserrat", system-ui, sans-serif;
+  font-weight: 300;
+}
+
+::selection {
+  background: rgba(209, 213, 219, 0.2);
+  color: var(--white);
+}
