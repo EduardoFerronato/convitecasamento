@@ -19,7 +19,7 @@ export const weddingConfig = {
   events: [
     {
       title: "Cerimônia",
-      time: "16:00",
+      time: "17:00",
       location: "Chácara do Abreu",
       address: "Sinop — MT",
       mapUrl: "https://www.google.com/maps/search/Ch%C3%A1cara+do+Abreu+Sinop+MT",
