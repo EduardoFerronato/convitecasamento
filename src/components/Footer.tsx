@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { weddingConfig } from "@/config/wedding";
+import Link from "next/link";
 
 function formatFooterDate(isoDate: string) {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -39,7 +40,10 @@ export function Footer() {
             {formattedDate} · {ceremony.location.toUpperCase()}, {ceremony.address.toUpperCase()}
           </p>
           <p className="mt-10 flex items-center justify-center gap-1.5 text-xs text-silver-muted">
-            Feito com
+            Feito com amor por
+            <Link href="https://www.instagram.com/eduardoferronato/" target="_blank" className="text-white">
+              @eduardoferronato
+            </Link>
             <Heart className="h-3 w-3 fill-white/40 text-white/40" strokeWidth={1.5} />
             para nosso grande dia
           </p>
