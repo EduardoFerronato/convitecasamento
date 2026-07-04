@@ -9,7 +9,6 @@ export interface RSVPRecord {
   phone: string;
   attending: "yes" | "no";
   guests: number;
-  dietary: string;
   message: string;
   createdAt: string;
 }
@@ -52,7 +51,6 @@ export async function POST(request: NextRequest) {
       phone,
       attending = "yes",
       guests,
-      dietary,
       message,
     } = body;
 
@@ -74,7 +72,7 @@ export async function POST(request: NextRequest) {
     const sql = getSql();
 
     await sql`
-      INSERT INTO rsvps (id, name, email, phone, attending, guests, dietary, message)
+      INSERT INTO rsvps (id, name, email, phone, attending, guests, message)
       VALUES (
         ${id},
         ${name.trim()},
@@ -82,7 +80,6 @@ export async function POST(request: NextRequest) {
         ${(phone || "").trim()},
         ${attending === "no" ? "no" : "yes"},
         ${guestCount},
-        ${(dietary || "").trim()},
         ${(message || "").trim()}
       )
     `;
@@ -144,7 +141,6 @@ export async function GET(request: NextRequest) {
         phone,
         attending,
         guests,
-        dietary,
         message,
         created_at AS "createdAt"
       FROM rsvps

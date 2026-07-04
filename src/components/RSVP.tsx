@@ -29,7 +29,6 @@ export function RSVP() {
     email: "",
     phone: "",
     guests: "0",
-    dietary: "",
     message: "",
     attending: "yes" as "yes" | "no",
   });
@@ -55,7 +54,6 @@ export function RSVP() {
         email: "",
         phone: "",
         guests: "0",
-        dietary: "",
         message: "",
         attending: "yes",
       });
@@ -191,17 +189,6 @@ export function RSVP() {
                   </Field>
                 )}
               </div>
-
-              <Field label="Restrições alimentares" htmlFor="rsvp-dietary">
-                <input
-                  id="rsvp-dietary"
-                  type="text"
-                  disabled={deadlinePassed}
-                  value={form.dietary}
-                  onChange={(e) => setForm({ ...form, dietary: e.target.value })}
-                  className="ref-input"
-                />
-              </Field>
 
               <Field label="Mensagem para os noivos" htmlFor="rsvp-message">
                 <textarea

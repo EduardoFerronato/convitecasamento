@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS rsvps (
   phone       TEXT NOT NULL DEFAULT '',
   attending   TEXT NOT NULL CHECK (attending IN ('yes', 'no')),
   guests      INTEGER NOT NULL DEFAULT 0,
-  dietary     TEXT NOT NULL DEFAULT '',
   message     TEXT NOT NULL DEFAULT '',
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
