@@ -91,12 +91,6 @@ export const weddingConfig = {
         link: "https://example.com/presente-5",
       },
       {
-        name: "Lua de Mel",
-        category: "Experiência",
-        price: "Valor livre",
-        link: "https://example.com/presente-6",
-      },
-      {
         name: "Jogo de Toalhas",
         category: "Quarto",
         price: "R$ 320",
@@ -109,6 +103,14 @@ export const weddingConfig = {
         link: "https://example.com/presente-8",
       },
     ],
+    honeymoon: {
+      title: "Lua de Mel",
+      label: "Contribuição especial",
+      description:
+        "Nossa lua de mel é um sonho que todos podem ajudar a realizar. Não há valor fixo — cada contribuição, do tamanho que for, faz diferença para nós.",
+      link: "https://example.com/presente-6",
+      buttonLabel: "Quero contribuir",
+    },
   },
 
   rsvp: {

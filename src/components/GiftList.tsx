@@ -2,10 +2,49 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { weddingConfig } from "@/config/wedding";
 import type { GiftReservation } from "@/app/api/gifts/route";
 import { SectionHeading } from "@/components/ui/WeddingUI";
+
+function HoneymoonSection() {
+  const { honeymoon } = weddingConfig.gifts;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="mt-14 border border-white/10 bg-night-card/80 p-6 md:mt-16 md:p-10"
+    >
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="font-sans-ui text-[10px] tracking-[0.28em] text-silver">
+          {honeymoon.label}
+        </span>
+        <div className="mt-4 flex justify-center">
+          <Heart className="h-5 w-5 text-white/80" strokeWidth={1.5} />
+        </div>
+        <h3 className="font-display mt-4 text-2xl text-white md:text-3xl">
+          {honeymoon.title}
+        </h3>
+        <p className="mt-4 text-sm leading-relaxed text-silver md:text-[15px]">
+          {honeymoon.description}
+        </p>
+        <p className="font-sans-ui mt-6 text-[10px] tracking-[0.2em] text-silver-muted">
+          Valor livre · quantas pessoas quiserem podem ajudar
+        </p>
+        <a
+          href={honeymoon.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-sans-ui mt-8 inline-flex items-center justify-center border border-white/30 bg-transparent px-10 py-3.5 text-[10px] tracking-[0.22em] text-white transition-all hover:border-white hover:bg-white/5"
+        >
+          {honeymoon.buttonLabel}
+        </a>
+      </div>
+    </motion.div>
+  );
+}
 
 export function GiftList() {
   const { gifts } = weddingConfig;
@@ -120,6 +159,8 @@ export function GiftList() {
             );
           })}
         </div>
+
+        <HoneymoonSection />
       </div>
     </section>
   );

@@ -434,6 +434,11 @@ export function ConvidadosPanel() {
                     </tbody>
                   </table>
                 </div>
+
+                <p className="mt-6 text-center text-xs text-silver-muted">
+                  {weddingConfig.gifts.honeymoon.title} é contribuição aberta (valor livre) e não
+                  entra na lista de reservas.
+                </p>
               </>
             )}
           </>
