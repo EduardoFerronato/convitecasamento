@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { weddingConfig } from "@/config/wedding";
+import { getSql } from "@/lib/db";
 
 export interface RSVPRecord {
   id: string;
@@ -15,36 +14,26 @@ export interface RSVPRecord {
   createdAt: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "rsvps.json");
-
-async function ensureDataFile() {
-  try {
-    await fs.access(DATA_DIR);
-  } catch {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-  }
-
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, "[]", "utf-8");
-  }
-}
-
-async function readRSVPs(): Promise<RSVPRecord[]> {
-  await ensureDataFile();
-  const content = await fs.readFile(DATA_FILE, "utf-8");
-  return JSON.parse(content) as RSVPRecord[];
-}
-
-async function writeRSVPs(records: RSVPRecord[]) {
-  await ensureDataFile();
-  await fs.writeFile(DATA_FILE, JSON.stringify(records, null, 2), "utf-8");
-}
-
 function isDeadlinePassed() {
   return Date.now() > new Date(weddingConfig.rsvpDeadline).getTime();
+}
+
+function isUniqueViolation(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: string }).code === "23505"
+  );
+}
+
+function isMissingTable(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: string }).code === "42P01"
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -80,35 +69,53 @@ export async function POST(request: NextRequest) {
 
     const additionalGuests = Math.min(Math.max(Number(guests) || 0, 0), 10);
     const guestCount = attending === "yes" ? 1 + additionalGuests : 0;
+    const id = crypto.randomUUID();
+    const normalizedEmail = email.trim().toLowerCase();
+    const sql = getSql();
 
-    const records = await readRSVPs();
-    const duplicate = records.find(
-      (r) => r.email === email.trim().toLowerCase()
-    );
-    if (duplicate) {
+    await sql`
+      INSERT INTO rsvps (id, name, email, phone, attending, guests, dietary, message)
+      VALUES (
+        ${id},
+        ${name.trim()},
+        ${normalizedEmail},
+        ${(phone || "").trim()},
+        ${attending === "no" ? "no" : "yes"},
+        ${guestCount},
+        ${(dietary || "").trim()},
+        ${(message || "").trim()}
+      )
+    `;
+
+    return NextResponse.json({ success: true, id });
+  } catch (error) {
+    if (isUniqueViolation(error)) {
       return NextResponse.json(
         { error: "Este e-mail já confirmou presença." },
         { status: 409 }
       );
     }
-
-    const record: RSVPRecord = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: (phone || "").trim(),
-      attending: attending === "no" ? "no" : "yes",
-      guests: guestCount,
-      dietary: (dietary || "").trim(),
-      message: (message || "").trim(),
-      createdAt: new Date().toISOString(),
-    };
-
-    records.push(record);
-    await writeRSVPs(records);
-
-    return NextResponse.json({ success: true, id: record.id });
-  } catch {
+    if (isMissingTable(error)) {
+      return NextResponse.json(
+        {
+          error:
+            "Tabela rsvps não encontrada. Execute sql/schema.sql no banco da Vercel.",
+        },
+        { status: 503 }
+      );
+    }
+    if (
+      error instanceof Error &&
+      error.message.includes("POSTGRES_URL não configurada")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Banco de dados não configurado. Adicione Postgres em Vercel → Storage.",
+        },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { error: "Erro interno ao salvar confirmação." },
       { status: 500 }
@@ -128,9 +135,45 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const records = await readRSVPs();
-    return NextResponse.json(records);
-  } catch {
+    const sql = getSql();
+    const rows = await sql`
+      SELECT
+        id,
+        name,
+        email,
+        phone,
+        attending,
+        guests,
+        dietary,
+        message,
+        created_at AS "createdAt"
+      FROM rsvps
+      ORDER BY created_at DESC
+    `;
+
+    return NextResponse.json(rows as RSVPRecord[]);
+  } catch (error) {
+    if (isMissingTable(error)) {
+      return NextResponse.json(
+        {
+          error:
+            "Tabela rsvps não encontrada. Execute sql/schema.sql no banco da Vercel.",
+        },
+        { status: 503 }
+      );
+    }
+    if (
+      error instanceof Error &&
+      error.message.includes("POSTGRES_URL não configurada")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Banco de dados não configurado. Adicione Postgres em Vercel → Storage.",
+        },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { error: "Erro ao carregar confirmações." },
       { status: 500 }
