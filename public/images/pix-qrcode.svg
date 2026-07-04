@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img" aria-label="QR Code Pix">
+  <rect width="400" height="400" fill="#ffffff"/>
+  <g fill="#111827">
+    <rect x="40" y="40" width="80" height="80"/>
+    <rect x="60" y="60" width="40" height="40" fill="#fff"/>
+    <rect x="280" y="40" width="80" height="80"/>
+    <rect x="300" y="60" width="40" height="40" fill="#fff"/>
+    <rect x="40" y="280" width="80" height="80"/>
+    <rect x="60" y="300" width="40" height="40" fill="#fff"/>
+    <rect x="140" y="140" width="20" height="20"/>
+    <rect x="180" y="140" width="20" height="20"/>
+    <rect x="220" y="140" width="20" height="20"/>
+    <rect x="140" y="180" width="20" height="20"/>
+    <rect x="200" y="180" width="20" height="20"/>
+    <rect x="240" y="180" width="20" height="20"/>
+    <rect x="160" y="220" width="20" height="20"/>
+    <rect x="220" y="220" width="20" height="20"/>
+    <rect x="260" y="220" width="20" height="20"/>
+    <rect x="140" y="260" width="20" height="20"/>
+    <rect x="180" y="260" width="20" height="20"/>
+    <rect x="240" y="260" width="20" height="20"/>
+  </g>
+  <text x="200" y="385" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#6b7280">Substitua por seu QR Pix</text>
+</svg>

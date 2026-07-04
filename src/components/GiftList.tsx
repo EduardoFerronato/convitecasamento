@@ -1,48 +1,185 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Heart, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, Copy, Heart, Loader2, X } from "lucide-react";
 import { weddingConfig } from "@/config/wedding";
 import type { GiftReservation } from "@/app/api/gifts/route";
 import { SectionHeading } from "@/components/ui/WeddingUI";
 
-function HoneymoonSection() {
+function HoneymoonPixModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const { honeymoon } = weddingConfig.gifts;
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(honeymoon.pixKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback para browsers sem clipboard API
+      const input = document.createElement("textarea");
+      input.value = honeymoon.pixKey;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="mt-14 border border-white/10 bg-night-card/80 p-6 md:mt-16 md:p-10"
-    >
-      <div className="mx-auto max-w-2xl text-center">
-        <span className="font-sans-ui text-[10px] tracking-[0.28em] text-silver">
-          {honeymoon.label}
-        </span>
-        <div className="mt-4 flex justify-center">
-          <Heart className="h-5 w-5 text-white/80" strokeWidth={1.5} />
-        </div>
-        <h3 className="font-display mt-4 text-2xl text-white md:text-3xl">
-          {honeymoon.title}
-        </h3>
-        <p className="mt-4 text-sm leading-relaxed text-silver md:text-[15px]">
-          {honeymoon.description}
-        </p>
-        <p className="font-sans-ui mt-6 text-[10px] tracking-[0.2em] text-silver-muted">
-          Valor livre · quantas pessoas quiserem podem ajudar
-        </p>
-        <a
-          href={honeymoon.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-sans-ui mt-8 inline-flex items-center justify-center border border-white/30 bg-transparent px-10 py-3.5 text-[10px] tracking-[0.22em] text-white transition-all hover:border-white hover:bg-white/5"
+    <AnimatePresence>
+      {open ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pix-modal-title"
         >
-          {honeymoon.buttonLabel}
-        </a>
-      </div>
-    </motion.div>
+          <button
+            type="button"
+            aria-label="Fechar"
+            onClick={onClose}
+            className="absolute inset-0 bg-night/80 backdrop-blur-sm"
+          />
+
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.98 }}
+            className="relative z-10 w-full max-w-sm border border-white/10 bg-night-card p-6 shadow-2xl md:p-8"
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Fechar modal"
+              className="absolute top-4 right-4 text-silver transition-colors hover:text-white"
+            >
+              <X className="h-5 w-5" strokeWidth={1.5} />
+            </button>
+
+            <h3
+              id="pix-modal-title"
+              className="font-display pr-8 text-xl text-white md:text-2xl"
+            >
+              Contribuir via Pix
+            </h3>
+            <p className="mt-2 text-sm text-silver">
+              Escaneie o QR Code ou copie a chave abaixo.
+            </p>
+
+            <div className="mx-auto mt-6 aspect-square w-full max-w-[220px] overflow-hidden rounded-sm bg-white p-3">
+              <Image
+                src={honeymoon.qrCodeImage}
+                alt="QR Code Pix para lua de mel"
+                width={220}
+                height={220}
+                className="h-full w-full object-contain"
+              />
+            </div>
+
+            <div className="mt-6">
+              <p className="font-sans-ui mb-2 text-[10px] tracking-[0.14em] text-silver">
+                {honeymoon.pixKeyLabel}
+              </p>
+              <p className="break-all rounded-sm border border-white/10 bg-night/50 px-3 py-2.5 text-sm text-white">
+                {honeymoon.pixKey}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="font-sans-ui mt-5 inline-flex w-full items-center justify-center gap-2 bg-white py-3.5 text-[10px] tracking-[0.22em] text-night transition-colors hover:bg-white/90"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                  Copiado!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  Copiar chave Pix
+                </>
+              )}
+            </button>
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+function HoneymoonSection() {
+  const { honeymoon } = weddingConfig.gifts;
+  const [modalOpen, setModalOpen] = useState(false);
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mt-14 border border-white/10 bg-night-card/80 p-6 md:mt-16 md:p-10"
+      >
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="font-sans-ui text-[10px] tracking-[0.28em] text-silver">
+            {honeymoon.label}
+          </span>
+          <div className="mt-4 flex justify-center">
+            <Heart className="h-5 w-5 text-white/80" strokeWidth={1.5} />
+          </div>
+          <h3 className="font-display mt-4 text-2xl text-white md:text-3xl">
+            {honeymoon.title}
+          </h3>
+          <p className="mt-4 text-sm leading-relaxed text-silver md:text-[15px]">
+            {honeymoon.description}
+          </p>
+          <p className="font-sans-ui mt-6 text-[10px] tracking-[0.2em] text-silver-muted">
+            Valor livre · quantas pessoas quiserem podem ajudar
+          </p>
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="font-sans-ui mt-8 inline-flex items-center justify-center border border-white/30 bg-transparent px-10 py-3.5 text-[10px] tracking-[0.22em] text-white transition-all hover:border-white hover:bg-white/5"
+          >
+            {honeymoon.buttonLabel}
+          </button>
+        </div>
+      </motion.div>
+
+      <HoneymoonPixModal
+        key={modalOpen ? "open" : "closed"}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
+    </>
   );
 }
 

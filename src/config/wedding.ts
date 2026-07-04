@@ -108,8 +108,10 @@ export const weddingConfig = {
       label: "Contribuição especial",
       description:
         "Nossa lua de mel é um sonho que todos podem ajudar a realizar. Não há valor fixo — cada contribuição, do tamanho que for, faz diferença para nós.",
-      link: "https://example.com/presente-6",
       buttonLabel: "Quero contribuir",
+      pixKey: "00000000000",
+      pixKeyLabel: "Chave Pix (CPF)",
+      qrCodeImage: "/images/pix-qrcode.svg",
     },
   },
 
