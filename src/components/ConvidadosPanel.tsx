@@ -5,18 +5,23 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Gift,
   Loader2,
   Lock,
   LogOut,
   RefreshCw,
+  Trash2,
   Users,
   UserCheck,
   UserX,
 } from "lucide-react";
 import type { RSVPRecord } from "@/app/api/rsvp/route";
+import type { GiftReservation } from "@/app/api/gifts/route";
+import { weddingConfig } from "@/config/wedding";
 import { SiteBackground } from "@/components/ui/WeddingUI";
 
 const STORAGE_KEY = "rsvp-admin-key";
+type Tab = "rsvp" | "gifts";
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -96,23 +101,58 @@ function StatCard({
   );
 }
 
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`font-sans-ui border-b-2 px-1 pb-3 text-[10px] tracking-[0.16em] transition-colors ${
+        active
+          ? "border-white text-white"
+          : "border-transparent text-silver hover:text-white/80"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function ConvidadosPanel() {
   const [adminKey, setAdminKey] = useState("");
   const [inputKey, setInputKey] = useState("");
+  const [activeTab, setActiveTab] = useState<Tab>("rsvp");
   const [records, setRecords] = useState<RSVPRecord[]>([]);
+  const [giftReservations, setGiftReservations] = useState<GiftReservation[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [removingGift, setRemovingGift] = useState<string | null>(null);
+
+  const fetchGiftReservations = useCallback(async () => {
+    const res = await fetch("/api/gifts");
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Erro ao carregar presentes.");
+    setGiftReservations(data as GiftReservation[]);
+  }, []);
 
   const fetchRecords = useCallback(async (key: string) => {
     setStatus("loading");
     setErrorMessage("");
 
     try {
-      const res = await fetch("/api/rsvp", {
-        headers: { "x-admin-key": key },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Não foi possível carregar.");
+      const [rsvpRes] = await Promise.all([
+        fetch("/api/rsvp", { headers: { "x-admin-key": key } }),
+        fetchGiftReservations(),
+      ]);
+      const data = await rsvpRes.json();
+      if (!rsvpRes.ok) throw new Error(data.error || "Não foi possível carregar.");
       setRecords(data as RSVPRecord[]);
       setAdminKey(key);
       setStatus("ready");
@@ -120,7 +160,7 @@ export function ConvidadosPanel() {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Erro desconhecido");
     }
-  }, []);
+  }, [fetchGiftReservations]);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(STORAGE_KEY);
@@ -145,13 +185,42 @@ export function ConvidadosPanel() {
     setAdminKey("");
     setInputKey("");
     setRecords([]);
+    setGiftReservations([]);
     setStatus("idle");
     setErrorMessage("");
+    setActiveTab("rsvp");
+  }
+
+  async function handleUnreserve(giftName: string) {
+    if (!adminKey || removingGift) return;
+    if (!confirm(`Remover a reserva de "${giftName}"?`)) return;
+
+    setRemovingGift(giftName);
+    try {
+      const res = await fetch("/api/gifts", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey,
+        },
+        body: JSON.stringify({ giftName }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao remover reserva.");
+      await fetchGiftReservations();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao remover reserva.");
+    } finally {
+      setRemovingGift(null);
+    }
   }
 
   const confirmed = records.filter((r) => r.attending === "yes");
   const declined = records.filter((r) => r.attending === "no");
   const totalGuests = confirmed.reduce((sum, r) => sum + r.guests, 0);
+  const reservationMap = new Map(giftReservations.map((r) => [r.giftName, r]));
+  const totalGifts = weddingConfig.gifts.items.length;
+  const reservedCount = giftReservations.length;
 
   const showLogin =
     !adminKey || status === "idle" || (status === "error" && records.length === 0);
@@ -169,8 +238,8 @@ export function ConvidadosPanel() {
               <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
               Voltar ao site
             </Link>
-            <h1 className="font-display text-3xl text-white md:text-4xl">Convidados</h1>
-            <p className="mt-2 text-sm text-silver">Controle de confirmações de presença</p>
+            <h1 className="font-display text-3xl text-white md:text-4xl">Painel</h1>
+            <p className="mt-2 text-sm text-silver">Confirmações e lista de presentes</p>
           </div>
 
           {adminKey && status === "ready" ? (
@@ -239,36 +308,134 @@ export function ConvidadosPanel() {
         ) : status === "loading" ? (
           <div className="flex flex-col items-center justify-center py-24 text-silver">
             <Loader2 className="mb-3 h-8 w-8 animate-spin" strokeWidth={1.5} />
-            <p className="text-sm">Carregando confirmações...</p>
+            <p className="text-sm">Carregando...</p>
           </div>
         ) : (
           <>
-            <div className="mb-10 grid gap-4 sm:grid-cols-3">
-              <StatCard label="Confirmados" value={confirmed.length} icon={UserCheck} />
-              <StatCard label="Total de pessoas" value={totalGuests} icon={Users} />
-              <StatCard label="Não comparecerão" value={declined.length} icon={UserX} />
+            <div className="mb-8 flex gap-6 border-b border-white/10">
+              <TabButton active={activeTab === "rsvp"} onClick={() => setActiveTab("rsvp")}>
+                Confirmações
+              </TabButton>
+              <TabButton active={activeTab === "gifts"} onClick={() => setActiveTab("gifts")}>
+                Presentes
+              </TabButton>
             </div>
 
-            <section className="mb-10">
-              <h2 className="font-display mb-4 text-xl text-white">
-                Confirmados ({confirmed.length})
-              </h2>
-              <div className="ref-card p-4 md:p-6">
-                <GuestTable records={confirmed} emptyMessage="Nenhuma confirmação ainda." />
-              </div>
-            </section>
+            {activeTab === "rsvp" ? (
+              <>
+                <div className="mb-10 grid gap-4 sm:grid-cols-3">
+                  <StatCard label="Confirmados" value={confirmed.length} icon={UserCheck} />
+                  <StatCard label="Total de pessoas" value={totalGuests} icon={Users} />
+                  <StatCard label="Não comparecerão" value={declined.length} icon={UserX} />
+                </div>
 
-            <section>
-              <h2 className="font-display mb-4 text-xl text-white">
-                Não comparecerão ({declined.length})
-              </h2>
-              <div className="ref-card p-4 md:p-6">
-                <GuestTable
-                  records={declined}
-                  emptyMessage="Ninguém informou que não irá."
-                />
-              </div>
-            </section>
+                <section className="mb-10">
+                  <h2 className="font-display mb-4 text-xl text-white">
+                    Confirmados ({confirmed.length})
+                  </h2>
+                  <div className="ref-card p-4 md:p-6">
+                    <GuestTable records={confirmed} emptyMessage="Nenhuma confirmação ainda." />
+                  </div>
+                </section>
+
+                <section>
+                  <h2 className="font-display mb-4 text-xl text-white">
+                    Não comparecerão ({declined.length})
+                  </h2>
+                  <div className="ref-card p-4 md:p-6">
+                    <GuestTable
+                      records={declined}
+                      emptyMessage="Ninguém informou que não irá."
+                    />
+                  </div>
+                </section>
+              </>
+            ) : (
+              <>
+                <div className="mb-10 grid gap-4 sm:grid-cols-3">
+                  <StatCard label="Total de presentes" value={totalGifts} icon={Gift} />
+                  <StatCard label="Reservados" value={reservedCount} icon={Gift} />
+                  <StatCard
+                    label="Disponíveis"
+                    value={totalGifts - reservedCount}
+                    icon={Gift}
+                  />
+                </div>
+
+                <div className="ref-card overflow-x-auto p-4 md:p-6">
+                  <table className="w-full min-w-[720px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10 text-silver">
+                        <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">
+                          Presente
+                        </th>
+                        <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">
+                          Categoria
+                        </th>
+                        <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">
+                          Preço
+                        </th>
+                        <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">
+                          Status
+                        </th>
+                        <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">
+                          Reservado em
+                        </th>
+                        <th className="font-sans-ui pb-3 text-[10px] tracking-[0.14em]">
+                          Ação
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {weddingConfig.gifts.items.map((item) => {
+                        const reservation = reservationMap.get(item.name);
+                        const isReserved = Boolean(reservation);
+                        const isRemoving = removingGift === item.name;
+
+                        return (
+                          <tr key={item.name} className="border-b border-white/5 text-white/90">
+                            <td className="py-3.5 pr-4 font-medium">{item.name}</td>
+                            <td className="py-3.5 pr-4 text-silver">{item.category}</td>
+                            <td className="py-3.5 pr-4 text-silver">{item.price}</td>
+                            <td className="py-3.5 pr-4">
+                              <span
+                                className={`font-sans-ui text-[9px] tracking-[0.12em] ${
+                                  isReserved ? "text-silver-muted" : "text-white"
+                                }`}
+                              >
+                                {isReserved ? "Reservado" : "Disponível"}
+                              </span>
+                            </td>
+                            <td className="py-3.5 pr-4 text-xs text-silver-muted">
+                              {reservation ? formatDate(reservation.reservedAt) : "—"}
+                            </td>
+                            <td className="py-3.5">
+                              {isReserved ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleUnreserve(item.name)}
+                                  disabled={isRemoving}
+                                  className="inline-flex items-center gap-1.5 text-xs text-red-400 transition-colors hover:text-red-300 disabled:opacity-50"
+                                >
+                                  {isRemoving ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                  )}
+                                  Remover reserva
+                                </button>
+                              ) : (
+                                <span className="text-xs text-silver-muted">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
