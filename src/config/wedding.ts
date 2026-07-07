@@ -33,37 +33,22 @@ export const weddingConfig = {
       {
         year: "Fev 2025",
         title: "Mesa de truco",
-        text: "Nos conhecemos em fevereiro, à mesa de um bar para jogar truco. Foi a primeira vez que nos vimos — jogamos, rimos, e naquele dia não rolou nada a mais. Mas, a partir dali, eu não parava de olhar para ela, encantado.",
+        text: "Nos vimos pela primeira vez em um bar, jogando truco. Naquele dia não rolou nada — mas eu já não parava de olhar para ela.",
       },
       {
         year: "Set 2025",
         title: "O reencontro",
-        text: "Só em setembro nos reencontramos de novo, na loja de um amigo dentro da faculdade, na semana do aniversário dela — dia 20 de setembro. Ver Anna depois de alguns meses fez meu olho brilhar outra vez. Entre conversa e brincadeira, ela me chamou para o aniversário dela no bar.",
+        text: "Meses depois, nos encontramos de novo na loja de um amigo na faculdade. Ela me chamou para o aniversário dela no bar — e dali em diante não nos desgrudamos mais.",
       },
       {
-        year: "Set 2025",
-        title: "O aniversário",
-        text: "Na festa, com a celebração no ar, começamos a conversar de verdade. Eu nem pensava em relacionamento na época — mas do dia do aniversário dela até hoje não nos desgrudamos mais. Sempre juntos, fazendo tudo a dois.",
-      },
-      {
-        year: "05 Nov 2025",
-        title: "Pedido de namoro",
-        text: "No dia 5 de novembro, oficializamos o que já sentíamos: um pediu o outro em namoro, e dissemos sim ao começo de tudo.",
-      },
-      {
-        year: "08 Fev 2026",
-        title: "O noivado",
-        text: "Em 8 de fevereiro, com o coração cheio, veio o pedido de noivado — mais um passo na construção do nosso futuro.",
-      },
-      {
-        year: "26 Jun 2026",
-        title: "Casamento civil",
-        text: "No dia 26 de junho, diante da lei e do nosso amor, nos casamos no civil. Já éramos um do outro; naquele dia, o papel confirmou o que a gente já sabia.",
+        year: "2025–2026",
+        title: "Nossos passos",
+        text: "Namoro em 05/11/2025, noivado em 08/02/2026 e casamento civil em 26/06/2026. Cada data, um sim a mais.",
       },
       {
         year: "Set 2026",
         title: "Nossa celebração",
-        text: "Agora, em setembro, convidamos todos que amamos para celebrar conosco este novo capítulo — o dia em que unimos nossas vidas diante de vocês.",
+        text: "Agora convidamos vocês para celebrar conosco o dia em que unimos nossas vidas.",
         isFinal: true,
       },
     ],
