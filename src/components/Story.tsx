@@ -21,7 +21,7 @@ export function Story() {
 
             {story.chapters.map((chapter, index) => (
               <motion.div
-                key={chapter.year}
+                key={`${chapter.year}-${chapter.title}`}
                 initial={{ opacity: 0, x: -16 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
