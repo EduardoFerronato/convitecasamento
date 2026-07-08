@@ -24,7 +24,7 @@ export function EnvelopeGate({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (!ready) {
-    return <div className="min-h-[100dvh] bg-night" />;
+    return <div className="min-h-[100dvh] bg-[#e8e6e2]" />;
   }
 
   return (
@@ -39,8 +39,7 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const topFlapRef = useRef<HTMLDivElement>(null);
   const bottomFlapRef = useRef<HTMLDivElement>(null);
-  const sealRef = useRef<HTMLButtonElement>(null);
-  const hintRef = useRef<HTMLParagraphElement>(null);
+  const sealWrapRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
 
   useEffect(() => {
@@ -51,12 +50,12 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
   }, []);
 
   useEffect(() => {
-    const seal = sealRef.current;
-    if (!seal) return;
+    const sealWrap = sealWrapRef.current;
+    if (!sealWrap) return;
 
-    gsap.to(seal, {
-      scale: 1.04,
-      duration: 1.2,
+    gsap.to(sealWrap, {
+      scale: 1.03,
+      duration: 1.4,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
@@ -67,15 +66,14 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
     if (animatingRef.current) return;
     animatingRef.current = true;
 
-    const seal = sealRef.current;
+    const sealWrap = sealWrapRef.current;
     const topFlap = topFlapRef.current;
     const bottomFlap = bottomFlapRef.current;
     const overlay = overlayRef.current;
-    const hint = hintRef.current;
 
-    if (!seal || !topFlap || !bottomFlap || !overlay) return;
+    if (!sealWrap || !topFlap || !bottomFlap || !overlay) return;
 
-    gsap.killTweensOf(seal);
+    gsap.killTweensOf(sealWrap);
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -84,80 +82,83 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
       },
     });
 
-    if (hint) {
-      tl.to(hint, { opacity: 0, duration: 0.2 }, 0);
-    }
-
-    tl.to(seal, {
+    tl.to(sealWrap, {
       scale: 0,
       opacity: 0,
-      duration: 0.45,
+      duration: 0.5,
       ease: "power2.in",
     })
       .to(
         topFlap,
-        {
-          y: "-100%",
-          duration: 0.85,
-          ease: "power3.inOut",
-        },
-        "-=0.15"
+        { y: "-100%", duration: 1, ease: "power3.inOut" },
+        "-=0.2"
       )
       .to(
         bottomFlap,
-        {
-          y: "100%",
-          duration: 0.85,
-          ease: "power3.inOut",
-        },
+        { y: "100%", duration: 1, ease: "power3.inOut" },
         "<"
       )
       .to(
         overlay,
-        {
-          opacity: 0,
-          duration: 0.55,
-          ease: "power2.out",
-        },
-        "-=0.35"
+        { opacity: 0, duration: 0.6, ease: "power2.out" },
+        "-=0.45"
       );
   }
 
-  const initials = `${weddingConfig.couple.bride.charAt(0)}&${weddingConfig.couple.groom.charAt(0)}`;
+  const brideInitial = weddingConfig.couple.bride.charAt(0);
+  const groomInitial = weddingConfig.couple.groom.charAt(0);
 
   return (
     <div
       ref={overlayRef}
-      className="envelope-overlay fixed inset-0 z-[200] flex items-center justify-center bg-night"
-      aria-hidden={false}
+      className="envelope-overlay fixed inset-0 z-[200] overflow-hidden bg-[#e8e6e2]"
+      role="dialog"
+      aria-label="Convite de casamento"
     >
-      <div className="envelope-scene flex flex-col items-center">
-        <p
-          ref={hintRef}
-          className="font-sans-ui mb-10 text-[10px] tracking-[0.28em] text-silver"
+      <div
+        ref={topFlapRef}
+        className="envelope-flap envelope-flap-top"
+        aria-hidden="true"
+      />
+      <div
+        ref={bottomFlapRef}
+        className="envelope-flap envelope-flap-bottom"
+        aria-hidden="true"
+      />
+
+      <div className="envelope-seal-stage">
+        <div ref={sealWrapRef} className="envelope-seal-wrap">
+        <button
+          type="button"
+          onClick={openEnvelope}
+          aria-label="Clique para abrir o convite"
+          className="envelope-seal"
         >
-          Toque no lacre para abrir
-        </p>
-
-        <div className="envelope">
-          <div className="envelope-body">
-            <span className="font-display text-lg text-night/40 md:text-xl">
-              {weddingConfig.couple.bride} & {weddingConfig.couple.groom}
-            </span>
-          </div>
-
-          <div ref={bottomFlapRef} className="envelope-flap-bottom" aria-hidden="true" />
-          <div ref={topFlapRef} className="envelope-flap-top" aria-hidden="true" />
-
-          <button
-            ref={sealRef}
-            type="button"
-            onClick={openEnvelope}
-            aria-label="Abrir convite — toque no lacre de cera"
-            className="envelope-seal"
+          <svg
+            className="envelope-seal-ring"
+            viewBox="0 0 120 120"
+            aria-hidden="true"
           >
-            <span className="font-display text-sm text-white/95 md:text-base">{initials}</span>
-          </button>
+            <defs>
+              <path
+                id="seal-text-path"
+                d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
+              />
+            </defs>
+            <text className="envelope-seal-ring-text">
+              <textPath href="#seal-text-path" startOffset="50%" textAnchor="middle">
+                CLIQUE PARA ABRIR
+              </textPath>
+            </text>
+          </svg>
+          <span className="envelope-seal-initials font-display">
+            {brideInitial}
+            <span className="envelope-seal-divider" aria-hidden="true">
+              |
+            </span>
+            {groomInitial}
+          </span>
+        </button>
         </div>
       </div>
     </div>
