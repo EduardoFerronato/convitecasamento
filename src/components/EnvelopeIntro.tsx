@@ -51,19 +51,6 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
     };
   }, []);
 
-  useEffect(() => {
-    const sealWrap = sealWrapRef.current;
-    if (!sealWrap) return;
-
-    gsap.to(sealWrap, {
-      scale: 1.035,
-      duration: 1.6,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-  }, []);
-
   function openEnvelope() {
     if (animatingRef.current) return;
     animatingRef.current = true;
