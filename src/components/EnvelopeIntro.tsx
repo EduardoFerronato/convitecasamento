@@ -24,7 +24,7 @@ export function EnvelopeGate({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (!ready) {
-    return <div className="min-h-[100dvh] bg-[#e8e6e2]" />;
+    return <div className="min-h-[100dvh] bg-[#eceae6]" />;
   }
 
   return (
@@ -39,6 +39,8 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const topFlapRef = useRef<HTMLDivElement>(null);
   const bottomFlapRef = useRef<HTMLDivElement>(null);
+  const leftFlapRef = useRef<HTMLDivElement>(null);
+  const rightFlapRef = useRef<HTMLDivElement>(null);
   const sealWrapRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
 
@@ -54,8 +56,8 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
     if (!sealWrap) return;
 
     gsap.to(sealWrap, {
-      scale: 1.03,
-      duration: 1.4,
+      scale: 1.035,
+      duration: 1.6,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
@@ -69,9 +71,11 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
     const sealWrap = sealWrapRef.current;
     const topFlap = topFlapRef.current;
     const bottomFlap = bottomFlapRef.current;
+    const leftFlap = leftFlapRef.current;
+    const rightFlap = rightFlapRef.current;
     const overlay = overlayRef.current;
 
-    if (!sealWrap || !topFlap || !bottomFlap || !overlay) return;
+    if (!sealWrap || !topFlap || !bottomFlap || !leftFlap || !rightFlap || !overlay) return;
 
     gsap.killTweensOf(sealWrap);
 
@@ -88,21 +92,11 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
       duration: 0.5,
       ease: "power2.in",
     })
-      .to(
-        topFlap,
-        { y: "-100%", duration: 1, ease: "power3.inOut" },
-        "-=0.2"
-      )
-      .to(
-        bottomFlap,
-        { y: "100%", duration: 1, ease: "power3.inOut" },
-        "<"
-      )
-      .to(
-        overlay,
-        { opacity: 0, duration: 0.6, ease: "power2.out" },
-        "-=0.45"
-      );
+      .to(topFlap, { y: "-100%", duration: 1.05, ease: "power3.inOut" }, "-=0.15")
+      .to(bottomFlap, { y: "100%", duration: 1.05, ease: "power3.inOut" }, "<")
+      .to(leftFlap, { x: "-100%", duration: 1.05, ease: "power3.inOut" }, "<")
+      .to(rightFlap, { x: "100%", duration: 1.05, ease: "power3.inOut" }, "<")
+      .to(overlay, { opacity: 0, duration: 0.65, ease: "power2.out" }, "-=0.5");
   }
 
   const brideInitial = weddingConfig.couple.bride.charAt(0);
@@ -111,54 +105,53 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
   return (
     <div
       ref={overlayRef}
-      className="envelope-overlay fixed inset-0 z-[200] overflow-hidden bg-[#e8e6e2]"
+      className="envelope-overlay fixed inset-0 z-[200] overflow-hidden bg-[#eceae6]"
       role="dialog"
       aria-label="Convite de casamento"
     >
-      <div
-        ref={topFlapRef}
-        className="envelope-flap envelope-flap-top"
-        aria-hidden="true"
-      />
+      <div className="envelope-paper" aria-hidden="true" />
+
+      <div ref={leftFlapRef} className="envelope-flap envelope-flap-left" aria-hidden="true" />
+      <div ref={rightFlapRef} className="envelope-flap envelope-flap-right" aria-hidden="true" />
+      <div ref={topFlapRef} className="envelope-flap envelope-flap-top" aria-hidden="true" />
       <div
         ref={bottomFlapRef}
         className="envelope-flap envelope-flap-bottom"
         aria-hidden="true"
       />
 
+      <div className="envelope-crease" aria-hidden="true" />
+
       <div className="envelope-seal-stage">
         <div ref={sealWrapRef} className="envelope-seal-wrap">
-        <button
-          type="button"
-          onClick={openEnvelope}
-          aria-label="Clique para abrir o convite"
-          className="envelope-seal"
-        >
-          <svg
-            className="envelope-seal-ring"
-            viewBox="0 0 120 120"
-            aria-hidden="true"
+          <button
+            type="button"
+            onClick={openEnvelope}
+            aria-label="Clique para abrir o convite"
+            className="envelope-seal"
           >
-            <defs>
-              <path
-                id="seal-text-path"
-                d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
-              />
-            </defs>
-            <text className="envelope-seal-ring-text">
-              <textPath href="#seal-text-path" startOffset="50%" textAnchor="middle">
-                CLIQUE PARA ABRIR
-              </textPath>
-            </text>
-          </svg>
-          <span className="envelope-seal-initials font-display">
-            {brideInitial}
-            <span className="envelope-seal-divider" aria-hidden="true">
-              |
+            <span className="envelope-seal-wax" aria-hidden="true" />
+            <svg className="envelope-seal-ring" viewBox="0 0 136 136" aria-hidden="true">
+              <defs>
+                <path
+                  id="seal-text-path"
+                  d="M 68,68 m -48,0 a 48,48 0 1,1 96,0 a 48,48 0 1,1 -96,0"
+                />
+              </defs>
+              <text className="envelope-seal-ring-text">
+                <textPath href="#seal-text-path" startOffset="50%" textAnchor="middle">
+                  CLIQUE PARA ABRIR
+                </textPath>
+              </text>
+            </svg>
+            <span className="envelope-seal-initials font-display">
+              {brideInitial}
+              <span className="envelope-seal-divider" aria-hidden="true">
+                |
+              </span>
+              {groomInitial}
             </span>
-            {groomInitial}
-          </span>
-        </button>
+          </button>
         </div>
       </div>
     </div>
