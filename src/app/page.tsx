@@ -1,4 +1,5 @@
 import { SiteBackground } from "@/components/ui/WeddingUI";
+import { EnvelopeGate } from "@/components/EnvelopeIntro";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { Countdown } from "@/components/Countdown";
@@ -9,17 +10,19 @@ import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="relative bg-night">
-      <SiteBackground />
-      <div className="relative z-10">
-        <Navigation />
-        <Hero />
-        <Countdown />
-        <Story />
-        <GiftList />
-        <RSVP />
-        <Footer />
-      </div>
-    </main>
+    <EnvelopeGate>
+      <main className="relative bg-night">
+        <SiteBackground />
+        <div className="relative z-10">
+          <Navigation />
+          <Hero />
+          <Countdown />
+          <Story />
+          <GiftList />
+          <RSVP />
+          <Footer />
+        </div>
+      </main>
+    </EnvelopeGate>
   );
 }
