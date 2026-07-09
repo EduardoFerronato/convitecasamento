@@ -33,7 +33,7 @@ export const weddingConfig = {
       {
         year: "Fev 2025",
         title: "Primeiro olhar",
-        text: "Nos vimos pela primeira vez jogando truco. Desde então, não parava de olhar para ela.",
+        text: "Nos vimos pela primeira vez jogando truco. Desde então, não parei de olhar para ela.",
       },
       {
         year: "Set 2025",
@@ -105,7 +105,7 @@ export const weddingConfig = {
       {
         name: "Jogo de Toalhas brancas",
         category: "Quarto",
-        price: "R$ 220",
+        price: "R$ 170",
         link: "https://www.mercadolivre.com.br/jogo-de-toalhas-buddemeyer-brisa-banho-branco-5-pecas/p/MLB29596516?pdp_filters=item_id:MLB6717197470#is_advertising=true&searchVariation=MLB29596516&backend_model=search-backend&be_origin=searchv2&position=3&search_layout=grid&type=pad&tracking_id=1f0e34fb-6597-4fc0-b321-d4387414df11&ad_domain=VQCATCORE_LST&ad_position=3&ad_click_id=MWFiOTdkMTMtOGVlNy00NTVhLTg3ZDgtZjk4MTU0OGUzMzQx",
       },
       {
@@ -128,7 +128,7 @@ export const weddingConfig = {
         "Nossa lua de mel é um sonho que todos podem ajudar a realizar. Não há valor fixo — cada contribuição, do tamanho que for, faz diferença para nós.",
       buttonLabel: "Quero contribuir",
       pixKey: "edu.fe.guin@gmail.com",
-      pixKeyLabel: "Chave Pix (email)",
+      pixKeyLabel: "Chave Pix (email): Banco Neon",
       qrCodeImage: "/images/qrcode-pix.png",
     },
   },
