@@ -1,35 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { weddingConfig } from "@/config/wedding";
-import { getSql } from "@/lib/db";
+import {
+  classifyGiftStoreError,
+  listGiftReservations,
+  removeGiftReservation,
+  reserveGift,
+} from "@/lib/gift-reservations";
 
-export interface GiftReservation {
-  id: string;
-  giftName: string;
-  reservedAt: string;
-}
+export type { GiftReservation } from "@/lib/gift-reservations";
 
 const giftNames = new Set(weddingConfig.gifts.items.map((item) => item.name));
 
 function isValidGiftName(name: unknown): name is string {
   return typeof name === "string" && giftNames.has(name.trim());
-}
-
-function isUniqueViolation(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code: string }).code === "23505"
-  );
-}
-
-function isMissingTable(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code: string }).code === "42P01"
-  );
 }
 
 function checkAdminKey(request: NextRequest) {
@@ -40,31 +23,41 @@ function checkAdminKey(request: NextRequest) {
   return request.headers.get("x-admin-key") === adminKey;
 }
 
+function giftStoreErrorResponse(kind: ReturnType<typeof classifyGiftStoreError>) {
+  if (kind === "missing-table") {
+    return NextResponse.json(
+      {
+        error:
+          "Tabela gift_reservations não encontrada. Execute sql/gift_reservations.sql no Neon.",
+      },
+      { status: 503 },
+    );
+  }
+
+  if (kind === "database-config") {
+    return NextResponse.json(
+      {
+        error:
+          "Banco de dados não configurado. Adicione Postgres em Vercel → Storage.",
+      },
+      { status: 503 },
+    );
+  }
+
+  return null;
+}
+
 export async function GET() {
   try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT
-        id,
-        gift_name AS "giftName",
-        reserved_at AS "reservedAt"
-      FROM gift_reservations
-      ORDER BY reserved_at DESC
-    `;
-    return NextResponse.json(rows as GiftReservation[]);
+    const rows = await listGiftReservations();
+    return NextResponse.json(rows);
   } catch (error) {
-    if (isMissingTable(error)) {
-      return NextResponse.json(
-        {
-          error:
-            "Tabela gift_reservations não encontrada. Execute sql/gift_reservations.sql no Neon.",
-        },
-        { status: 503 }
-      );
-    }
+    const storeError = giftStoreErrorResponse(classifyGiftStoreError(error));
+    if (storeError) return storeError;
+
     return NextResponse.json(
       { error: "Erro ao carregar reservas de presentes." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -78,35 +71,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Presente inválido." }, { status: 400 });
     }
 
-    const name = giftName.trim();
-    const id = crypto.randomUUID();
-    const sql = getSql();
-
-    await sql`
-      INSERT INTO gift_reservations (id, gift_name)
-      VALUES (${id}, ${name})
-    `;
-
-    return NextResponse.json({ success: true, id, giftName: name });
+    const reservation = await reserveGift(giftName.trim());
+    return NextResponse.json({
+      success: true,
+      id: reservation.id,
+      giftName: reservation.giftName,
+    });
   } catch (error) {
-    if (isUniqueViolation(error)) {
+    if (classifyGiftStoreError(error) === "unique") {
       return NextResponse.json(
         { error: "Este presente já foi reservado." },
-        { status: 409 }
+        { status: 409 },
       );
     }
-    if (isMissingTable(error)) {
-      return NextResponse.json(
-        {
-          error:
-            "Tabela gift_reservations não encontrada. Execute sql/gift_reservations.sql no Neon.",
-        },
-        { status: 503 }
-      );
-    }
+
+    const storeError = giftStoreErrorResponse(classifyGiftStoreError(error));
+    if (storeError) return storeError;
+
     return NextResponse.json(
       { error: "Erro ao reservar presente." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -124,34 +108,22 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Presente inválido." }, { status: 400 });
     }
 
-    const sql = getSql();
-    const rows = await sql`
-      DELETE FROM gift_reservations
-      WHERE gift_name = ${giftName.trim()}
-      RETURNING id
-    `;
-
-    if (rows.length === 0) {
+    const removed = await removeGiftReservation(giftName.trim());
+    if (!removed) {
       return NextResponse.json(
         { error: "Este presente não está reservado." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    if (isMissingTable(error)) {
-      return NextResponse.json(
-        {
-          error:
-            "Tabela gift_reservations não encontrada. Execute sql/gift_reservations.sql no Neon.",
-        },
-        { status: 503 }
-      );
-    }
+    const storeError = giftStoreErrorResponse(classifyGiftStoreError(error));
+    if (storeError) return storeError;
+
     return NextResponse.json(
       { error: "Erro ao remover reserva." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

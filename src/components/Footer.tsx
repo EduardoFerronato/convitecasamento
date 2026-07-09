@@ -23,8 +23,8 @@ export function Footer() {
       <div className="mx-auto max-w-4xl">
         <div className="relative mb-12 aspect-[16/9] overflow-hidden rounded-sm">
           <Image
-            src="/images/venue-reception.jpg"
-            alt="Local da recepção"
+            src="/images/image_chacara.png"
+            alt="Chácara do Abreu"
             fill
             sizes="(max-width: 896px) 100vw, 896px"
             className="object-cover"
