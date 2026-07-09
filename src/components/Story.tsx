@@ -55,7 +55,7 @@ export function Story() {
             className="relative aspect-[3/4] overflow-hidden rounded-sm lg:sticky lg:top-28 lg:self-start"
           >
             <Image
-              src="/images/story-couple.jpg"
+              src="/images/image-nos.jpeg"
               alt="Anna e Eduardo"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"

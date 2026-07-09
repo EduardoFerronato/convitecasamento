@@ -30,8 +30,14 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       className={`${cormorant.variable} ${montserrat.variable} h-full scroll-smooth`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full font-sans font-light antialiased">{children}</body>
+      <body
+        className="min-h-full font-sans font-light antialiased"
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   );
 }

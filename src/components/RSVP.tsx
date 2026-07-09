@@ -119,7 +119,15 @@ export function RSVP() {
                       key={option}
                       type="button"
                       disabled={deadlinePassed}
-                      onClick={() => setForm({ ...form, attending: option })}
+                      onClick={() =>
+                        setForm({
+                          ...form,
+                          attending: option,
+                          ...(option === "no"
+                            ? { email: "", phone: "", guests: "0" }
+                            : {}),
+                        })
+                      }
                       className={`font-sans-ui flex-1 border-b-2 py-2.5 text-[10px] tracking-[0.12em] transition-all disabled:opacity-40 ${
                         form.attending === option
                           ? "border-white text-white"
@@ -132,46 +140,47 @@ export function RSVP() {
                 </div>
               </Field>
 
-              <div className="grid gap-8 sm:grid-cols-2">
-                <Field label="Nome completo" htmlFor="rsvp-name">
-                  <input
-                    id="rsvp-name"
-                    type="text"
-                    required
-                    disabled={deadlinePassed}
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="ref-input"
-                    autoComplete="name"
-                  />
-                </Field>
-                <Field label="Email" htmlFor="rsvp-email">
-                  <input
-                    id="rsvp-email"
-                    type="email"
-                    required
-                    disabled={deadlinePassed}
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="ref-input"
-                    autoComplete="email"
-                  />
-                </Field>
-              </div>
+              <Field label="Nome completo" htmlFor="rsvp-name">
+                <input
+                  id="rsvp-name"
+                  type="text"
+                  required
+                  disabled={deadlinePassed}
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="ref-input"
+                  autoComplete="name"
+                />
+              </Field>
 
-              <div className="grid gap-8 sm:grid-cols-2">
-                <Field label="Telefone" htmlFor="rsvp-phone">
-                  <input
-                    id="rsvp-phone"
-                    type="tel"
-                    disabled={deadlinePassed}
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="ref-input"
-                    autoComplete="tel"
-                  />
-                </Field>
-                {form.attending === "yes" && (
+              {form.attending === "yes" && (
+                <>
+                  <div className="grid gap-8 sm:grid-cols-2">
+                    <Field label="Email" htmlFor="rsvp-email">
+                      <input
+                        id="rsvp-email"
+                        type="email"
+                        required
+                        disabled={deadlinePassed}
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        className="ref-input"
+                        autoComplete="email"
+                      />
+                    </Field>
+                    <Field label="Telefone" htmlFor="rsvp-phone">
+                      <input
+                        id="rsvp-phone"
+                        type="tel"
+                        disabled={deadlinePassed}
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        className="ref-input"
+                        autoComplete="tel"
+                      />
+                    </Field>
+                  </div>
+
                   <Field label="Acompanhantes" htmlFor="rsvp-guests">
                     <select
                       id="rsvp-guests"
@@ -187,8 +196,8 @@ export function RSVP() {
                       ))}
                     </select>
                   </Field>
-                )}
-              </div>
+                </>
+              )}
 
               <Field label="Mensagem para os noivos" htmlFor="rsvp-message">
                 <textarea
@@ -224,7 +233,7 @@ export function RSVP() {
                     disabled={deadlinePassed}
                     icon={<Send className="h-3.5 w-3.5" strokeWidth={1.5} />}
                   >
-                    Confirmar Presença
+                    {form.attending === "yes" ? "Confirmar Presença" : "Enviar Mensagem"}
                   </PrimaryButton>
                 )}
               </div>

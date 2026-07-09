@@ -33,6 +33,10 @@ function formatDate(iso: string) {
   }).format(new Date(iso));
 }
 
+function isPlaceholderEmail(email: string) {
+  return email.endsWith("@rsvp.local");
+}
+
 function GuestTable({
   records,
   emptyMessage,
@@ -61,9 +65,13 @@ function GuestTable({
             <tr key={record.id} className="border-b border-white/5 text-white/90">
               <td className="py-3.5 pr-4 align-top font-medium">{record.name}</td>
               <td className="py-3.5 pr-4 align-top text-silver">
-                <div>{record.email}</div>
+                {!isPlaceholderEmail(record.email) ? <div>{record.email}</div> : null}
                 {record.phone ? (
-                  <div className="mt-0.5 text-xs text-silver-muted">{record.phone}</div>
+                  <div className={`text-xs text-silver-muted ${!isPlaceholderEmail(record.email) ? "mt-0.5" : ""}`}>
+                    {record.phone}
+                  </div>
+                ) : isPlaceholderEmail(record.email) ? (
+                  <span>—</span>
                 ) : null}
               </td>
               <td className="py-3.5 pr-4 align-top">{record.guests}</td>

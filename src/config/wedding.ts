@@ -9,11 +9,11 @@ export const weddingConfig = {
   rsvpDeadline: "2026-08-31T23:59:59-04:00",
 
   invitation: {
-    subtitle: "Temos a honra de convidar você para celebrar",
+    subtitle: "Temos a honra de convidar você para celebrar o nosso casamento",
   },
 
   countdown: {
-    phrase: "até nos tornarmos um só",
+    phrase: "até o grande dia",
   },
 
   events: [
@@ -32,13 +32,13 @@ export const weddingConfig = {
     chapters: [
       {
         year: "Fev 2025",
-        title: "Mesa de truco",
-        text: "Nos vimos pela primeira vez em um bar, jogando truco. Naquele dia não rolou nada — mas eu já não parava de olhar para ela.",
+        title: "Primeiro olhar",
+        text: "Nos vimos pela primeira vez jogando truco. Desde então, não parava de olhar para ela.",
       },
       {
         year: "Set 2025",
         title: "O reencontro",
-        text: "Meses depois, nos encontramos de novo na loja de um amigo na faculdade. Ela me chamou para o aniversário dela no bar — e dali em diante não nos desgrudamos mais.",
+        text: "Meses depois, nos encontramos de novo na loja de um amigo na faculdade. Ela me chamou para o aniversário dela, e dali em diante não nos desgrudamos mais.",
       },
       {
         year: "2025–2026",
@@ -69,8 +69,8 @@ export const weddingConfig = {
       {
         name: "Aspirador Robô",
         category: "Casa",
-        price: "R$ 890",
-        link: "https://example.com/presente-2",
+        price: "R$ 1300",
+        link: "https://www.mercadolivre.com.br/rob-aspirador-xiaomi-s40-inteligente-aspira-passa-pano-app-branco/p/MLB62162344?pdp_filters=item_id%3AMLB7087930772&matt_tool=38524122&ua=hMOgIaROlbb3uF1cJmYkYpgrWUQ8fxyk85Kys7kPbnxYuK4#origin=share&sid=share&wid=MLB7087930772&action=copy",
       },
       {
         name: "Jogo de Panelas",

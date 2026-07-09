@@ -212,7 +212,7 @@ export function GiftList() {
 
   const reservedNames = new Set(reservations.map((r) => r.giftName));
 
-  async function handleReserve(name: string, link: string) {
+  async function handleReserve(name: string) {
     if (reservedNames.has(name) || loadingGift) return;
 
     setLoadingGift(name);
@@ -232,7 +232,6 @@ export function GiftList() {
       }
 
       await loadReservations();
-      window.open(link, "_blank", "noopener,noreferrer");
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Erro ao reservar.");
     } finally {
@@ -274,24 +273,34 @@ export function GiftList() {
                   {item.name}
                 </h3>
                 <p className="mt-4 mb-5 text-sm text-silver">{item.price}</p>
-                <button
-                  type="button"
-                  onClick={() => handleReserve(item.name, item.link)}
-                  disabled={isReserved || isLoading}
-                  aria-label={
-                    isReserved ? `${item.name} já reservado` : `Reservar ${item.name}`
-                  }
-                  className={`font-sans-ui inline-flex w-full items-center justify-center gap-2 py-2.5 text-[9px] tracking-[0.2em] transition-all ${
-                    isReserved
-                      ? "bg-white/5 text-silver-muted"
-                      : "bg-white text-night hover:bg-white/90"
-                  }`}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={1.5} />
-                  ) : null}
-                  {isReserved ? "✓ Reservado" : isLoading ? "Reservando..." : "Reservar"}
-                </button>
+                <div className="flex flex-col gap-2">
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-sans-ui inline-flex w-full items-center justify-center border border-white/20 py-2.5 text-[9px] tracking-[0.2em] text-silver transition-colors hover:border-white/40 hover:text-white"
+                  >
+                    Ver exemplo
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => handleReserve(item.name)}
+                    disabled={isReserved || isLoading}
+                    aria-label={
+                      isReserved ? `${item.name} já reservado` : `Reservar ${item.name}`
+                    }
+                    className={`font-sans-ui inline-flex w-full items-center justify-center gap-2 py-2.5 text-[9px] tracking-[0.2em] transition-all ${
+                      isReserved
+                        ? "bg-white/5 text-silver-muted"
+                        : "bg-white text-night hover:bg-white/90"
+                    }`}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={1.5} />
+                    ) : null}
+                    {isReserved ? "✓ Reservado" : isLoading ? "Reservando..." : "Reservar"}
+                  </button>
+                </div>
               </motion.div>
             );
           })}

@@ -39,14 +39,17 @@ function TimeBlock({ value, label }: { value: number; label: string }) {
 }
 
 export function Countdown() {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
-    calculateTimeLeft(weddingConfig.weddingDate)
-  );
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(weddingConfig.weddingDate));
-    }, 1000);
+    const update = () => setTimeLeft(calculateTimeLeft(weddingConfig.weddingDate));
+    update();
+    const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
   }, []);
 

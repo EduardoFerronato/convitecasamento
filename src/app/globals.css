@@ -201,7 +201,10 @@ textarea {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, #f3f1ed 0%, #ebe8e3 100%);
+  background-color: #f3f1ed;
+  background-image: var(--envelope-paper-pulp), var(--envelope-paper-grain), var(--envelope-paper-fiber);
+  background-size: 512px 512px, 200px 200px, 100% 100%;
+  background-blend-mode: soft-light, multiply, multiply;
 }
 
 .envelope-crease {
@@ -232,9 +235,27 @@ textarea {
   left: 0;
   width: 100%;
   height: 52vh;
-  background-color: #fcfbfa;
-  background-image: var(--envelope-leaves), var(--envelope-paper-shine);
-  background-size: 360px 360px, 100% 100%;
+  background-color: #f5f3ef;
+  background-image:
+    var(--envelope-leaves),
+    var(--envelope-paper-grain),
+    var(--envelope-paper-pulp),
+    var(--envelope-paper-fiber),
+    var(--envelope-paper-shine);
+  background-size: 360px 360px, 200px 200px, 512px 512px, 100% 100%, 100% 100%;
+  background-blend-mode: normal, multiply, soft-light, multiply, normal;
+}
+
+.envelope-flap-top::after,
+.envelope-flap-bottom::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--envelope-paper-grain);
+  background-size: 140px 140px;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 .envelope-flap-top {
@@ -256,8 +277,27 @@ textarea {
   top: 0;
   width: 52vw;
   height: 100%;
-  background: linear-gradient(135deg, #e4e2de 0%, #d8d6d2 50%, #e0deda 100%);
+  background-color: #ddd9d4;
+  background-image:
+    var(--envelope-paper-grain),
+    var(--envelope-paper-pulp-gray),
+    var(--envelope-paper-fiber-gray),
+    var(--envelope-paper-shine-gray);
+  background-size: 200px 200px, 512px 512px, 100% 100%, 100% 100%;
+  background-blend-mode: multiply, soft-light, multiply, normal;
   z-index: 3;
+}
+
+.envelope-flap-left::after,
+.envelope-flap-right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--envelope-paper-grain);
+  background-size: 140px 140px;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 .envelope-flap-left {
@@ -409,11 +449,48 @@ textarea {
 }
 
 :root {
+  --envelope-paper-grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.62'/%3E%3C/svg%3E");
+  --envelope-paper-pulp: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.028' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.97 0 0 0 0 0.95 0 0 0 0 0.91 0 0 0 1.15 -0.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  --envelope-paper-pulp-gray: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='pg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.028' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.88 0 0 0 0 0.86 0 0 0 0 0.83 0 0 0 1.15 -0.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23pg)'/%3E%3C/svg%3E");
+  --envelope-paper-fiber-gray: repeating-linear-gradient(
+      94deg,
+      transparent 0,
+      transparent 10px,
+      rgba(120, 110, 98, 0.045) 10px,
+      rgba(120, 110, 98, 0.045) 11px
+    ),
+    repeating-linear-gradient(
+      4deg,
+      transparent 0,
+      transparent 14px,
+      rgba(130, 120, 108, 0.035) 14px,
+      rgba(130, 120, 108, 0.035) 15px
+    );
+  --envelope-paper-shine-gray: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.05) 42%,
+    rgba(175, 170, 162, 0.14) 100%
+  );
+  --envelope-paper-fiber: repeating-linear-gradient(
+      94deg,
+      transparent 0,
+      transparent 10px,
+      rgba(155, 142, 126, 0.034) 10px,
+      rgba(155, 142, 126, 0.034) 11px
+    ),
+    repeating-linear-gradient(
+      4deg,
+      transparent 0,
+      transparent 14px,
+      rgba(168, 156, 140, 0.026) 14px,
+      rgba(168, 156, 140, 0.026) 15px
+    );
   --envelope-leaves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'%3E%3Cg fill='none' stroke='%23d0ccc4' stroke-width='0.9' opacity='0.7'%3E%3Cellipse cx='72' cy='88' rx='18' ry='32' transform='rotate(-35 72 88)'/%3E%3Cellipse cx='98' cy='78' rx='16' ry='28' transform='rotate(-15 98 78)'/%3E%3Cellipse cx='58' cy='108' rx='14' ry='26' transform='rotate(-55 58 108)'/%3E%3Cellipse cx='180' cy='70' rx='18' ry='30' transform='rotate(20 180 70)'/%3E%3Cellipse cx='208' cy='82' rx='16' ry='28' transform='rotate(40 208 82)'/%3E%3Cellipse cx='162' cy='95' rx='14' ry='24' transform='rotate(5 162 95)'/%3E%3Cellipse cx='288' cy='92' rx='18' ry='32' transform='rotate(35 288 92)'/%3E%3Cellipse cx='314' cy='78' rx='16' ry='28' transform='rotate(55 314 78)'/%3E%3Cellipse cx='268' cy='110' rx='14' ry='26' transform='rotate(15 268 110)'/%3E%3Cellipse cx='95' cy='195' rx='18' ry='32' transform='rotate(-25 95 195)'/%3E%3Cellipse cx='122' cy='182' rx='16' ry='28' transform='rotate(-5 122 182)'/%3E%3Cellipse cx='75' cy='215' rx='14' ry='26' transform='rotate(-45 75 215)'/%3E%3Cellipse cx='205' cy='188' rx='18' ry='30' transform='rotate(15 205 188)'/%3E%3Cellipse cx='232' cy='200' rx='16' ry='28' transform='rotate(35 232 200)'/%3E%3Cellipse cx='178' cy='210' rx='14' ry='24' transform='rotate(0 178 210)'/%3E%3Cellipse cx='300' cy='198' rx='18' ry='32' transform='rotate(30 300 198)'/%3E%3Cellipse cx='328' cy='185' rx='16' ry='28' transform='rotate(50 328 185)'/%3E%3Cellipse cx='278' cy='218' rx='14' ry='26' transform='rotate(10 278 218)'/%3E%3Cellipse cx='88' cy='295' rx='18' ry='32' transform='rotate(-30 88 295)'/%3E%3Cellipse cx='115' cy='282' rx='16' ry='28' transform='rotate(-10 115 282)'/%3E%3Cellipse cx='198' cy='288' rx='18' ry='30' transform='rotate(10 198 288)'/%3E%3Cellipse cx='225' cy='300' rx='16' ry='28' transform='rotate(30 225 300)'/%3E%3Cellipse cx='305' cy='292' rx='18' ry='32' transform='rotate(25 305 292)'/%3E%3Cellipse cx='332' cy='278' rx='16' ry='28' transform='rotate(45 332 278)'/%3E%3C/g%3E%3C/svg%3E");
   --envelope-paper-shine: linear-gradient(
     168deg,
-    rgba(255, 255, 255, 0.65) 0%,
-    rgba(255, 255, 255, 0.15) 40%,
-    rgba(240, 236, 230, 0.25) 100%
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(240, 236, 230, 0.18) 100%
   );
 }

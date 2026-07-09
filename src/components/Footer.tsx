@@ -39,14 +39,18 @@ export function Footer() {
           <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-silver">
             {formattedDate} · {ceremony.location.toUpperCase()}, {ceremony.address.toUpperCase()}
           </p>
-          <p className="mt-10 flex items-center justify-center gap-1.5 text-xs text-silver-muted">
-            Feito com amor por
-            <Link href="https://www.instagram.com/eduardoferronato/" target="_blank" className="text-white">
+          <div className="mt-10 flex flex-col items-center gap-2 text-xs text-silver-muted">
+            <span>Feito com amor por</span>
+            <Link
+              href="https://www.instagram.com/eduardoferronato/"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 text-white"
+            >
               @eduardoferronato
+              <Heart className="h-3 w-3 fill-white/40 text-white/40" strokeWidth={1.5} />
             </Link>
-            <Heart className="h-3 w-3 fill-white/40 text-white/40" strokeWidth={1.5} />
-            para nosso grande dia
-          </p>
+            <span>para nosso grande dia</span>
+          </div>
         </div>
       </div>
     </footer>

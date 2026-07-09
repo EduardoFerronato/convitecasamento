@@ -54,21 +54,31 @@ export async function POST(request: NextRequest) {
       message,
     } = body;
 
-    if (!name?.trim() || !email?.trim()) {
+    if (attending === "no") {
+      if (!name?.trim()) {
+        return NextResponse.json(
+          { error: "Nome é obrigatório." },
+          { status: 400 }
+        );
+      }
+    } else if (!name?.trim() || !email?.trim()) {
       return NextResponse.json(
         { error: "Nome e e-mail são obrigatórios." },
         { status: 400 }
       );
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (attending !== "no" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "E-mail inválido." }, { status: 400 });
     }
 
     const additionalGuests = Math.min(Math.max(Number(guests) || 0, 0), 10);
     const guestCount = attending === "yes" ? 1 + additionalGuests : 0;
     const id = crypto.randomUUID();
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail =
+      attending === "no"
+        ? `ausente-${id}@rsvp.local`
+        : email.trim().toLowerCase();
     const sql = getSql();
 
     await sql`
