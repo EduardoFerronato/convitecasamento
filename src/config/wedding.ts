@@ -97,12 +97,6 @@ export const weddingConfig = {
         link: "https://www.havan.com.br/edredom-queen-king-100-algodao-buona-fortuna-cinza-chumbo-liso-novo/p",
       },
       {
-        name: "Difusor Ultrassônico",
-        category: "Quarto",
-        price: "R$ 100",
-        link: "https://www.mercadolivre.com.br/difusor-de-oleos-essenciais-ultrassonico-aromaterapia-400ml-cor-marrom-claro/p/MLB32394705?pdp_filters=item_id%3AMLB4435494722&from=gshop&matt_tool=41970894&matt_word=&matt_source=google&matt_campaign_id=22090193723&matt_ad_group_id=194474622154&matt_match_type=&matt_network=g&matt_device=c&matt_creative=792355615173&matt_keyword=&matt_ad_position=&matt_ad_type=pla&matt_merchant_id=735098660&matt_product_id=MLB32394705-product&matt_product_partition_id=2454861946208&matt_target_id=aud-2487342594146:pla-2454861946208&cq_src=google_ads&cq_cmp=22090193723&cq_net=g&cq_plt=gp&cq_med=pla&gad_source=1&gad_campaignid=22090193723&gbraid=0AAAAAD93qcCww3RjheQdu5slMwJhqTStP&gclid=Cj0KCQjwjb3SBhDgARIsAMKiWzjkve_XldHtrpNH_YYTzinyq6IpsAWr269WdLJsbb36piNxmUDKSosaAiy3EALw_wcB",
-      },
-      {
         name: "Jogo de Toalhas brancas",
         category: "Quarto",
         price: "R$ 170",
