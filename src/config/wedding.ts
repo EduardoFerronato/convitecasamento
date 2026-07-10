@@ -5,7 +5,7 @@ export const weddingConfig = {
     hashtag: "#AnnaEEduardo",
   },
 
-  weddingDate: "2026-09-12T16:00:00-04:00",
+  weddingDate: "2026-09-12T16:30:00-04:00",
   rsvpDeadline: "2026-08-31T23:59:59-04:00",
 
   invitation: {
@@ -19,7 +19,7 @@ export const weddingConfig = {
   events: [
     {
       title: "Cerimônia",
-      time: "17:00",
+      time: "16:30",
       location: "Chácara do Abreu",
       address: "Sinop — MT",
       mapUrl: "https://www.google.com/maps/search/Ch%C3%A1cara+do+Abreu+Sinop+MT",
