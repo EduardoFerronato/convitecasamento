@@ -5,15 +5,18 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Check,
   Gift,
   Loader2,
   Lock,
   LogOut,
+  Pencil,
   RefreshCw,
   Trash2,
   Users,
   UserCheck,
   UserX,
+  X,
 } from "lucide-react";
 import type { RSVPRecord } from "@/app/api/rsvp/route";
 import type { GiftReservation } from "@/app/api/gifts/route";
@@ -40,49 +43,153 @@ function isPlaceholderEmail(email: string) {
 function GuestTable({
   records,
   emptyMessage,
+  onSaveGuests,
+  onDelete,
+  busyId,
 }: {
   records: RSVPRecord[];
   emptyMessage: string;
+  onSaveGuests: (id: string, guests: number) => Promise<void>;
+  onDelete: (record: RSVPRecord) => Promise<void>;
+  busyId: string | null;
 }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("0");
+
   if (records.length === 0) {
     return <p className="py-8 text-center text-sm text-silver">{emptyMessage}</p>;
   }
 
+  function startEdit(record: RSVPRecord) {
+    setEditingId(record.id);
+    setEditValue(String(record.guests));
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+  }
+
+  async function saveEdit(id: string) {
+    await onSaveGuests(id, Number(editValue) || 0);
+    setEditingId(null);
+  }
+
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-left text-sm">
+      <table className="w-full min-w-[720px] text-left text-sm">
         <thead>
           <tr className="border-b border-white/10 text-silver">
             <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">Nome</th>
             <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">Contato</th>
             <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">Pessoas</th>
             <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">Mensagem</th>
-            <th className="font-sans-ui pb-3 text-[10px] tracking-[0.14em]">Enviado em</th>
+            <th className="font-sans-ui pb-3 pr-4 text-[10px] tracking-[0.14em]">Enviado em</th>
+            <th className="font-sans-ui pb-3 text-[10px] tracking-[0.14em]">Ações</th>
           </tr>
         </thead>
         <tbody>
-          {records.map((record) => (
-            <tr key={record.id} className="border-b border-white/5 text-white/90">
-              <td className="py-3.5 pr-4 align-top font-medium">{record.name}</td>
-              <td className="py-3.5 pr-4 align-top text-silver">
-                {!isPlaceholderEmail(record.email) ? <div>{record.email}</div> : null}
-                {record.phone ? (
-                  <div className={`text-xs text-silver-muted ${!isPlaceholderEmail(record.email) ? "mt-0.5" : ""}`}>
-                    {record.phone}
+          {records.map((record) => {
+            const isEditing = editingId === record.id;
+            const isBusy = busyId === record.id;
+            const canEditGuests = record.attending === "yes";
+
+            return (
+              <tr key={record.id} className="border-b border-white/5 text-white/90">
+                <td className="py-3.5 pr-4 align-top font-medium">{record.name}</td>
+                <td className="py-3.5 pr-4 align-top text-silver">
+                  {!isPlaceholderEmail(record.email) ? <div>{record.email}</div> : null}
+                  {record.phone ? (
+                    <div className={`text-xs text-silver-muted ${!isPlaceholderEmail(record.email) ? "mt-0.5" : ""}`}>
+                      {record.phone}
+                    </div>
+                  ) : isPlaceholderEmail(record.email) ? (
+                    <span>—</span>
+                  ) : null}
+                </td>
+                <td className="py-3.5 pr-4 align-top">
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      min={0}
+                      max={20}
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      className="w-16 rounded-sm border border-white/20 bg-night px-2 py-1 text-sm text-white focus:border-white/50 focus:outline-none"
+                      autoFocus
+                    />
+                  ) : (
+                    record.guests
+                  )}
+                </td>
+                <td className="max-w-[200px] py-3.5 pr-4 align-top text-silver">
+                  {record.message || "—"}
+                </td>
+                <td className="py-3.5 pr-4 align-top text-xs whitespace-nowrap text-silver-muted">
+                  {formatDate(record.createdAt)}
+                </td>
+                <td className="py-3.5 align-top">
+                  <div className="flex items-center gap-3">
+                    {isEditing ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => saveEdit(record.id)}
+                          disabled={isBusy}
+                          aria-label="Salvar"
+                          className="inline-flex items-center gap-1 text-xs text-emerald-400 transition-colors hover:text-emerald-300 disabled:opacity-50"
+                        >
+                          {isBusy ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Check className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          )}
+                          Salvar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelEdit}
+                          disabled={isBusy}
+                          aria-label="Cancelar"
+                          className="inline-flex items-center text-xs text-silver transition-colors hover:text-white disabled:opacity-50"
+                        >
+                          <X className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {canEditGuests ? (
+                          <button
+                            type="button"
+                            onClick={() => startEdit(record)}
+                            disabled={isBusy}
+                            aria-label="Editar acompanhantes"
+                            className="inline-flex items-center gap-1 text-xs text-silver transition-colors hover:text-white disabled:opacity-50"
+                          >
+                            <Pencil className="h-3.5 w-3.5" strokeWidth={1.5} />
+                            Editar
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={() => onDelete(record)}
+                          disabled={isBusy}
+                          aria-label="Excluir"
+                          className="inline-flex items-center gap-1 text-xs text-red-400 transition-colors hover:text-red-300 disabled:opacity-50"
+                        >
+                          {isBusy ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          )}
+                          Excluir
+                        </button>
+                      </>
+                    )}
                   </div>
-                ) : isPlaceholderEmail(record.email) ? (
-                  <span>—</span>
-                ) : null}
-              </td>
-              <td className="py-3.5 pr-4 align-top">{record.guests}</td>
-              <td className="max-w-[200px] py-3.5 pr-4 align-top text-silver">
-                {record.message || "—"}
-              </td>
-              <td className="py-3.5 align-top text-xs whitespace-nowrap text-silver-muted">
-                {formatDate(record.createdAt)}
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -142,6 +249,7 @@ export function ConvidadosPanel() {
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [removingGift, setRemovingGift] = useState<string | null>(null);
+  const [busyRecordId, setBusyRecordId] = useState<string | null>(null);
 
   const fetchGiftReservations = useCallback(async () => {
     const res = await fetch("/api/gifts");
@@ -197,6 +305,60 @@ export function ConvidadosPanel() {
     setStatus("idle");
     setErrorMessage("");
     setActiveTab("rsvp");
+  }
+
+  const refreshRsvp = useCallback(async (key: string) => {
+    const res = await fetch("/api/rsvp", { headers: { "x-admin-key": key } });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Não foi possível carregar.");
+    setRecords(data as RSVPRecord[]);
+  }, []);
+
+  async function handleSaveGuests(id: string, guests: number) {
+    if (!adminKey || busyRecordId) return;
+
+    setBusyRecordId(id);
+    try {
+      const res = await fetch("/api/rsvp", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey,
+        },
+        body: JSON.stringify({ id, guests }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao atualizar.");
+      await refreshRsvp(adminKey);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao atualizar.");
+    } finally {
+      setBusyRecordId(null);
+    }
+  }
+
+  async function handleDeleteRecord(record: RSVPRecord) {
+    if (!adminKey || busyRecordId) return;
+    if (!confirm(`Excluir a confirmação de "${record.name}"?`)) return;
+
+    setBusyRecordId(record.id);
+    try {
+      const res = await fetch("/api/rsvp", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey,
+        },
+        body: JSON.stringify({ id: record.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao excluir.");
+      await refreshRsvp(adminKey);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao excluir.");
+    } finally {
+      setBusyRecordId(null);
+    }
   }
 
   async function handleUnreserve(giftName: string) {
@@ -342,7 +504,13 @@ export function ConvidadosPanel() {
                     Confirmados ({confirmed.length})
                   </h2>
                   <div className="ref-card p-4 md:p-6">
-                    <GuestTable records={confirmed} emptyMessage="Nenhuma confirmação ainda." />
+                    <GuestTable
+                      records={confirmed}
+                      emptyMessage="Nenhuma confirmação ainda."
+                      onSaveGuests={handleSaveGuests}
+                      onDelete={handleDeleteRecord}
+                      busyId={busyRecordId}
+                    />
                   </div>
                 </section>
 
@@ -354,6 +522,9 @@ export function ConvidadosPanel() {
                     <GuestTable
                       records={declined}
                       emptyMessage="Ninguém informou que não irá."
+                      onSaveGuests={handleSaveGuests}
+                      onDelete={handleDeleteRecord}
+                      busyId={busyRecordId}
                     />
                   </div>
                 </section>

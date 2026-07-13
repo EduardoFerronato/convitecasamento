@@ -1,38 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { weddingConfig } from "@/config/wedding";
-import { getSql } from "@/lib/db";
+import {
+  classifyRsvpStoreError,
+  createRsvp,
+  deleteRsvp,
+  listRsvps,
+  updateRsvpGuests,
+} from "@/lib/rsvp-store";
 
-export interface RSVPRecord {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  attending: "yes" | "no";
-  guests: number;
-  message: string;
-  createdAt: string;
-}
+export type { RSVPRecord } from "@/lib/rsvp-store";
 
 function isDeadlinePassed() {
   return Date.now() > new Date(weddingConfig.rsvpDeadline).getTime();
 }
 
-function isUniqueViolation(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code: string }).code === "23505"
-  );
+function checkAdminKey(request: NextRequest) {
+  const adminKey = process.env.RSVP_ADMIN_KEY;
+  if (adminKey) {
+    return request.headers.get("x-admin-key") === adminKey;
+  }
+  return process.env.NODE_ENV !== "production";
 }
 
-function isMissingTable(error: unknown) {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code: string }).code === "42P01"
-  );
+function storeErrorResponse(kind: ReturnType<typeof classifyRsvpStoreError>) {
+  if (kind === "missing-table") {
+    return NextResponse.json(
+      {
+        error:
+          "Tabela rsvps não encontrada. Execute sql/schema.sql no banco da Vercel.",
+      },
+      { status: 503 },
+    );
+  }
+
+  if (kind === "database-config") {
+    return NextResponse.json(
+      {
+        error:
+          "Banco de dados não configurado. Adicione Postgres em Vercel → Storage.",
+      },
+      { status: 503 },
+    );
+  }
+
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -40,31 +51,21 @@ export async function POST(request: NextRequest) {
     if (isDeadlinePassed()) {
       return NextResponse.json(
         { error: "O prazo para confirmação de presença já encerrou." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     const body = await request.json();
-    const {
-      name,
-      email,
-      phone,
-      attending = "yes",
-      guests,
-      message,
-    } = body;
+    const { name, email, phone, attending = "yes", guests, message } = body;
 
     if (attending === "no") {
       if (!name?.trim()) {
-        return NextResponse.json(
-          { error: "Nome é obrigatório." },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Nome é obrigatório." }, { status: 400 });
       }
     } else if (!name?.trim() || !email?.trim()) {
       return NextResponse.json(
         { error: "Nome e e-mail são obrigatórios." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,110 +80,119 @@ export async function POST(request: NextRequest) {
       attending === "no"
         ? `ausente-${id}@rsvp.local`
         : email.trim().toLowerCase();
-    const sql = getSql();
 
-    await sql`
-      INSERT INTO rsvps (id, name, email, phone, attending, guests, message)
-      VALUES (
-        ${id},
-        ${name.trim()},
-        ${normalizedEmail},
-        ${(phone || "").trim()},
-        ${attending === "no" ? "no" : "yes"},
-        ${guestCount},
-        ${(message || "").trim()}
-      )
-    `;
+    await createRsvp({
+      id,
+      name: name.trim(),
+      email: normalizedEmail,
+      phone: (phone || "").trim(),
+      attending: attending === "no" ? "no" : "yes",
+      guests: guestCount,
+      message: (message || "").trim(),
+    });
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
-    if (isUniqueViolation(error)) {
+    if (classifyRsvpStoreError(error) === "unique") {
       return NextResponse.json(
         { error: "Este e-mail já confirmou presença." },
-        { status: 409 }
+        { status: 409 },
       );
     }
-    if (isMissingTable(error)) {
-      return NextResponse.json(
-        {
-          error:
-            "Tabela rsvps não encontrada. Execute sql/schema.sql no banco da Vercel.",
-        },
-        { status: 503 }
-      );
-    }
-    if (
-      error instanceof Error &&
-      error.message.includes("POSTGRES_URL não configurada")
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Banco de dados não configurado. Adicione Postgres em Vercel → Storage.",
-        },
-        { status: 503 }
-      );
-    }
+
+    const storeError = storeErrorResponse(classifyRsvpStoreError(error));
+    if (storeError) return storeError;
+
     return NextResponse.json(
       { error: "Erro interno ao salvar confirmação." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function GET(request: NextRequest) {
-  const adminKey = process.env.RSVP_ADMIN_KEY;
-  if (adminKey) {
-    const provided = request.headers.get("x-admin-key");
-    if (provided !== adminKey) {
-      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-    }
-  } else if (process.env.NODE_ENV === "production") {
+  if (!checkAdminKey(request)) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
   try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT
-        id,
-        name,
-        email,
-        phone,
-        attending,
-        guests,
-        message,
-        created_at AS "createdAt"
-      FROM rsvps
-      ORDER BY created_at DESC
-    `;
-
-    return NextResponse.json(rows as RSVPRecord[]);
+    const rows = await listRsvps();
+    return NextResponse.json(rows);
   } catch (error) {
-    if (isMissingTable(error)) {
-      return NextResponse.json(
-        {
-          error:
-            "Tabela rsvps não encontrada. Execute sql/schema.sql no banco da Vercel.",
-        },
-        { status: 503 }
-      );
-    }
-    if (
-      error instanceof Error &&
-      error.message.includes("POSTGRES_URL não configurada")
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Banco de dados não configurado. Adicione Postgres em Vercel → Storage.",
-        },
-        { status: 503 }
-      );
-    }
+    const storeError = storeErrorResponse(classifyRsvpStoreError(error));
+    if (storeError) return storeError;
+
     return NextResponse.json(
       { error: "Erro ao carregar confirmações." },
-      { status: 500 }
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  if (!checkAdminKey(request)) {
+    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { id, guests } = body;
+
+    if (typeof id !== "string" || !id.trim()) {
+      return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+    }
+
+    const guestCount = Math.min(Math.max(Number(guests) || 0, 0), 20);
+    const updated = await updateRsvpGuests(id, guestCount);
+
+    if (!updated) {
+      return NextResponse.json(
+        { error: "Confirmação não encontrada." },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true, guests: guestCount });
+  } catch (error) {
+    const storeError = storeErrorResponse(classifyRsvpStoreError(error));
+    if (storeError) return storeError;
+
+    return NextResponse.json(
+      { error: "Erro ao atualizar confirmação." },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  if (!checkAdminKey(request)) {
+    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { id } = body;
+
+    if (typeof id !== "string" || !id.trim()) {
+      return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+    }
+
+    const removed = await deleteRsvp(id);
+    if (!removed) {
+      return NextResponse.json(
+        { error: "Confirmação não encontrada." },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const storeError = storeErrorResponse(classifyRsvpStoreError(error));
+    if (storeError) return storeError;
+
+    return NextResponse.json(
+      { error: "Erro ao remover confirmação." },
+      { status: 500 },
     );
   }
 }
