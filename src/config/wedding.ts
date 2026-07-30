@@ -114,6 +114,12 @@ export const weddingConfig = {
         price: "R$ 100",
         link: "https://www.mercadolivre.com.br/tramontina-jogo-de-facas-plenus-com-6-pecas-em-aco-inox-e-suporte-de-madeira/p/MLB27490685?pdp_filters=item_id:MLB3559935785#is_advertising=true&searchVariation=MLB27490685&backend_model=search-backend&be_origin=searchv2&position=27&search_layout=grid&type=pad&tracking_id=f6b2a8d4-7df9-4f45-bdc3-0446460c20ea&ad_domain=VQCATCORE_LST&ad_position=27&ad_click_id=NzNlZDVmNzQtYzQ4ZC00ZDI3LWFmNTktMGJhMTY3YmRjZjBk",
       },
+      {
+        name: "Kit Organizador Lavanderia",
+        category: "Casa",
+        price: "R$ 270",
+        link: "https://www.mercadolivre.com.br/kit-organizador-lavanderia-dispenser-sabao-cesto-borrifador/up/MLBU4061320374?pdp_filters=item_id%3AMLB4742178423&matt_tool=38524122&ua=gznuVhly5lmfsN46vGh2cLn_75YP0uV8LTEtXCfSma4tOpA#origin=whatsapp&sid=whatsapp&wid=MLB4742178423",
+      },
     ],
     honeymoon: {
       title: "Lua de Mel✈️",
