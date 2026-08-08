@@ -122,7 +122,7 @@ export const weddingConfig = {
       },
       {
         name: "Filtro de Água",
-        category: "Casa",
+        category: "Cozinha",
         price: "R$ 650",
         link: "https://www.mercadolivre.com.br/up/MLBU3008934198?matt_tool=38524122&pdp_filters=item_id:MLB3971491099&ua=nerGUo-lTRqG_yjBBcsC5whbKDJvFGQKx6piQ2YYiNJKgcg#origin=share&sid=share&wid=MLB3971491099&action=copy"
       },
@@ -134,28 +134,46 @@ export const weddingConfig = {
       },
       {
         name: "Mixer de Cozinha",
-        category: "Casa",
+        category: "Cozinha",
         price: "R$ 280",
         link: "https://www.mercadolivre.com.br/mixer-3-em-1-eib10-400w-preto-electrolux-110v/up/MLBU3001924279?pdp_filters=item_id%3AMLB5095231292&matt_tool=38524122&ua=fzq5xQi4vrKe3Avdx4c7rKAf1VSXbQMDOAEW8X5muaEfCDc#origin=whatsapp&sid=whatsapp&wid=MLB5095231292"
       },
       {
         name: "Jogo de Chá de porcelana",
-        category: "Casa",
+        category: "Cozinha",
         price: "R$ 740",
         link: "https://produto.mercadolivre.com.br/MLB-4949032475-jogo-de-cha-porcelana-15-pecas-estilo-vintage-com-suporte-_JM?matt_tool=38524122&ua=DY75RKVbbOVmFORcgOkYYJeq8z9KzNMao-d9aN7e5cYbTIg#origin=share&sid=share&action=copy"
       },
       {
         name: "Edredom Queen",
-        category: "Casa",
+        category: "Quarto",
         price: "R$ 170",
         link: "https://www.mercadolivre.com.br/p/MLB48997892?attributes=WIDTH-LENGTH:MLB54126912,COLOR:MLB48997892&matt_tool=38524122&pdp_filters=item_id:MLB4055976843&ua=dVkwcN7V-XyMWB2ZqQpmXpb5eCLkaRSXEi1bV5G0Yejstl8#origin=share&sid=share&wid=MLB4055976843&action=copy"
+      },
+      {
+        name: "Umidificador de Ar",
+        category: "Casa",
+        price: "R$ 250",
+        link: "https://www.havan.com.br/umidificador-de-ar-philco-42l-pud04b-diversos/p?utm_source=share"
+      },
+      {
+        name: "Pipoqueira Elétrica",
+        category: "Cozinha",
+        price: "R$ 240",
+        link: "https://www.havan.com.br/pipoqueira-eletrica-britania-pop-time-sem-oleo-b-02/p"
+      },
+      {
+        name: "Máquina de Waffle",
+        category: "Cozinha",
+        price: "R$ 150",
+        link: "https://www.havan.com.br/maquina-de-waffle-klicke/p?utm_source=share"
       },
       // {
       //   name: "Jogo de Toalhas",
       //   category: "Casa",
       //   price: "R$ 270",
       //   link: ""
-      // }
+      // },
     ],
     honeymoon: {
       title: "Lua de Mel✈️",
