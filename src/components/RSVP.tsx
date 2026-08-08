@@ -189,7 +189,7 @@ export function RSVP() {
                       onChange={(e) => setForm({ ...form, guests: e.target.value })}
                       className="ref-input cursor-pointer"
                     >
-                      {[0, 1, 2, 3, 4, 5].map((n) => (
+                      {[0, 1, 2, 3].map((n) => (
                         <option key={n} value={String(n)} className="bg-night">
                           {n}
                         </option>

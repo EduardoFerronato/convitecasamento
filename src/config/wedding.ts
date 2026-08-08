@@ -120,6 +120,42 @@ export const weddingConfig = {
         price: "R$ 270",
         link: "https://www.mercadolivre.com.br/kit-organizador-lavanderia-dispenser-sabao-cesto-borrifador/up/MLBU4061320374?pdp_filters=item_id%3AMLB4742178423&matt_tool=38524122&ua=gznuVhly5lmfsN46vGh2cLn_75YP0uV8LTEtXCfSma4tOpA#origin=whatsapp&sid=whatsapp&wid=MLB4742178423",
       },
+      {
+        name: "Filtro de Água",
+        category: "Casa",
+        price: "R$ 650",
+        link: "https://www.mercadolivre.com.br/up/MLBU3008934198?matt_tool=38524122&pdp_filters=item_id:MLB3971491099&ua=nerGUo-lTRqG_yjBBcsC5whbKDJvFGQKx6piQ2YYiNJKgcg#origin=share&sid=share&wid=MLB3971491099&action=copy"
+      },
+      {
+        name: "Aspirador de Pó",
+        category: "Casa",
+        price: "R$ 190",
+        link: "https://www.mercadolivre.com.br/aspirador-de-po-electrolux-vertical-com-fio-2-em-1-127v-stk15/p/MLB18238728?pdp_filters=item_id%3AMLB2754848802&matt_tool=38524122&ua=HfMKy05ehTinlKX2AJHvlCYOfJufC03xnelZCohWB6m_nKM#origin=whatsapp&sid=whatsapp&wid=MLB2754848802"
+      },
+      {
+        name: "Mixer de Cozinha",
+        category: "Casa",
+        price: "R$ 280",
+        link: "https://www.mercadolivre.com.br/mixer-3-em-1-eib10-400w-preto-electrolux-110v/up/MLBU3001924279?pdp_filters=item_id%3AMLB5095231292&matt_tool=38524122&ua=fzq5xQi4vrKe3Avdx4c7rKAf1VSXbQMDOAEW8X5muaEfCDc#origin=whatsapp&sid=whatsapp&wid=MLB5095231292"
+      },
+      {
+        name: "Jogo de Chá de porcelana",
+        category: "Casa",
+        price: "R$ 740",
+        link: "https://produto.mercadolivre.com.br/MLB-4949032475-jogo-de-cha-porcelana-15-pecas-estilo-vintage-com-suporte-_JM?matt_tool=38524122&ua=DY75RKVbbOVmFORcgOkYYJeq8z9KzNMao-d9aN7e5cYbTIg#origin=share&sid=share&action=copy"
+      },
+      {
+        name: "Edredom Queen",
+        category: "Casa",
+        price: "R$ 170",
+        link: "https://www.mercadolivre.com.br/p/MLB48997892?attributes=WIDTH-LENGTH:MLB54126912,COLOR:MLB48997892&matt_tool=38524122&pdp_filters=item_id:MLB4055976843&ua=dVkwcN7V-XyMWB2ZqQpmXpb5eCLkaRSXEi1bV5G0Yejstl8#origin=share&sid=share&wid=MLB4055976843&action=copy"
+      },
+      // {
+      //   name: "Jogo de Toalhas",
+      //   category: "Casa",
+      //   price: "R$ 270",
+      //   link: ""
+      // }
     ],
     honeymoon: {
       title: "Lua de Mel✈️",

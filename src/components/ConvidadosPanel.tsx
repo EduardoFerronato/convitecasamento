@@ -111,7 +111,7 @@ function GuestTable({
                     <input
                       type="number"
                       min={0}
-                      max={20}
+                      max={4}
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
                       className="w-16 rounded-sm border border-white/20 bg-night px-2 py-1 text-sm text-white focus:border-white/50 focus:outline-none"

@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "E-mail inválido." }, { status: 400 });
     }
 
-    const additionalGuests = Math.min(Math.max(Number(guests) || 0, 0), 10);
+    const additionalGuests = Math.min(Math.max(Number(guests) || 0, 0), 3);
     const guestCount = attending === "yes" ? 1 + additionalGuests : 0;
     const id = crypto.randomUUID();
     const normalizedEmail =
@@ -142,7 +142,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "ID inválido." }, { status: 400 });
     }
 
-    const guestCount = Math.min(Math.max(Number(guests) || 0, 0), 20);
+    const guestCount = Math.min(Math.max(Number(guests) || 0, 0), 4);
     const updated = await updateRsvpGuests(id, guestCount);
 
     if (!updated) {
