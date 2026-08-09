@@ -168,6 +168,12 @@ export const weddingConfig = {
         price: "R$ 150",
         link: "https://www.havan.com.br/maquina-de-waffle-klicke/p?utm_source=share"
       },
+      {
+        name: "Kit de 100 Cabides",
+        category: "Casa",
+        price: "R$ 160",
+        link: "https://www.mercadolivre.com.br/p/MLB67504729?matt_tool=38524122&pdp_filters=item_id:MLB6555879568&ua=YsGb7Noeex74RJPgqszeyrAiziGJvl2l_AYcgfdmekvHex0#origin=share&sid=share&wid=MLB6555879568&action=whatsapp"
+      },
       // {
       //   name: "Jogo de Toalhas",
       //   category: "Casa",
