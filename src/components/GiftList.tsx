@@ -136,6 +136,95 @@ function HoneymoonPixModal({
   );
 }
 
+function ConfirmReserveModal({
+  open,
+  giftName,
+  isLoading,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  giftName: string | null;
+  isLoading: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open, onCancel]);
+
+  return (
+    <AnimatePresence>
+      {open && giftName ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-reserve-title"
+        >
+          <button
+            type="button"
+            aria-label="Fechar"
+            onClick={onCancel}
+            className="absolute inset-0 bg-night/80 backdrop-blur-sm"
+          />
+
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.98 }}
+            className="relative z-10 w-full max-w-sm border border-white/10 bg-night-card p-6 shadow-2xl md:p-8"
+          >
+            <h3
+              id="confirm-reserve-title"
+              className="font-display text-xl text-white md:text-2xl"
+            >
+              Confirmar reserva
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-silver">
+              Deseja confirmar a reserva do presente &ldquo;{giftName}&rdquo;?
+            </p>
+
+            <div className="mt-7 flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={isLoading}
+                className="font-sans-ui inline-flex w-full items-center justify-center border border-white/20 py-3 text-[10px] tracking-[0.2em] text-silver transition-colors hover:border-white/40 hover:text-white disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={onConfirm}
+                disabled={isLoading}
+                className="font-sans-ui inline-flex w-full items-center justify-center gap-2 bg-white py-3 text-[10px] tracking-[0.22em] text-night transition-colors hover:bg-white/90 disabled:opacity-70"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={1.5} />
+                ) : null}
+                Confirmar
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
 function HoneymoonSection() {
   const { honeymoon } = weddingConfig.gifts;
   const [modalOpen, setModalOpen] = useState(false);
@@ -188,6 +277,7 @@ export function GiftList() {
   const [reservations, setReservations] = useState<GiftReservation[]>([]);
   const [loadingGift, setLoadingGift] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [confirmGift, setConfirmGift] = useState<string | null>(null);
 
   const loadReservations = useCallback(async () => {
     try {
@@ -239,6 +329,13 @@ export function GiftList() {
     }
   }
 
+  function handleConfirmReserve() {
+    if (!confirmGift) return;
+    const name = confirmGift;
+    setConfirmGift(null);
+    void handleReserve(name);
+  }
+
   return (
     <section id="presentes" className="px-5 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
@@ -284,7 +381,7 @@ export function GiftList() {
                   </a>
                   <button
                     type="button"
-                    onClick={() => handleReserve(item.name)}
+                    onClick={() => setConfirmGift(item.name)}
                     disabled={isReserved || isLoading}
                     aria-label={
                       isReserved ? `${item.name} já reservado` : `Reservar ${item.name}`
@@ -308,6 +405,15 @@ export function GiftList() {
 
         <HoneymoonSection />
       </div>
+
+      <ConfirmReserveModal
+        key={confirmGift ? `confirm-${confirmGift}` : "confirm-closed"}
+        open={confirmGift !== null}
+        giftName={confirmGift}
+        isLoading={loadingGift === confirmGift}
+        onConfirm={handleConfirmReserve}
+        onCancel={() => setConfirmGift(null)}
+      />
     </section>
   );
 }
