@@ -174,6 +174,18 @@ export const weddingConfig = {
         price: "R$ 160",
         link: "https://www.mercadolivre.com.br/p/MLB67504729?matt_tool=38524122&pdp_filters=item_id:MLB6555879568&ua=YsGb7Noeex74RJPgqszeyrAiziGJvl2l_AYcgfdmekvHex0#origin=share&sid=share&wid=MLB6555879568&action=whatsapp"
       },
+      {
+        name: "Espelho com LED",
+        category: "Casa",
+        price: "R$ 180",
+        link: "https://www.mercadolivre.com.br/up/MLBU3958820283?matt_tool=38524122&pdp_filters=item_id:MLB6767169916&ua=3uQfxvENPuvFf27MLyWzaAMY4PCyaE8nShIy1T960xGYuqY#origin=share&sid=share&wid=MLB6767169916&action=whatsapp"
+      },
+      {
+        name: "Jogo 3 Assadeiras Antiaderentes",
+        category: "Cozinha",
+        price: "R$ 160",
+        link: "https://www.mercadolivre.com.br/up/MLBU3137204159?matt_tool=38524122&pdp_filters=item_id:MLB4040547855&ua=lwlcrf79jmzk3O0WEoIl-R5kU8fuVyWgDzwwjO-PY1Xsl-I#origin=share&sid=share&wid=MLB4040547855&action=copy"
+      },
       // {
       //   name: "Jogo de Toalhas",
       //   category: "Casa",
