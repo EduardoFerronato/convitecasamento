@@ -63,8 +63,8 @@ export const weddingConfig = {
       {
         name: "Aspirador Robô",
         category: "Casa",
-        price: "R$ 1300",
-        link: "https://www.mercadolivre.com.br/rob-aspirador-xiaomi-s40-inteligente-aspira-passa-pano-app-branco/p/MLB62162344?pdp_filters=item_id%3AMLB7087930772&matt_tool=38524122&ua=hMOgIaROlbb3uF1cJmYkYpgrWUQ8fxyk85Kys7kPbnxYuK4#origin=share&sid=share&wid=MLB7087930772&action=copy",
+        price: "R$ 2800",
+        link: "https://www.mercadolivre.com.br/robo-aspirador-xiaomi-robot-vacuum-h50-base-auto-esvaziamento-10000pa-branco/p/MLB69227149#polycard_client=search-desktop&be_origin=backend&overlay_label=not_apply&search_layout=grid&position=1&type=product&tracking_id=a773ac6f-34f4-46fd-8cd0-deb481ffd739&wid=MLB7169412388&sid=search",
       },
       {
         name: "Jogo de Panelas Cerâmicas Cor Off-White",
